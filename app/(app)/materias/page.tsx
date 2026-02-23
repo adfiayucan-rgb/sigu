@@ -11,15 +11,15 @@ import { useState } from 'react'
 
 export default function MateriasPage() {
   const { data: semestres, isLoading: ls } = useSemestres()
-  const { data: materias, isLoading: lm, mutate: mutateMaterias } = useMaterias()
+  const semestreActual = semestres?.find((s) => s.es_actual)
+  const { data: materias, isLoading: lm, mutate: mutateMaterias } = useMaterias(semestreActual?.id)
   const { data: actividades, isLoading: la, mutate: mutateActividades } = useActividades()
   const [showAddMateria, setShowAddMateria] = useState(false)
   const [showAddActividad, setShowAddActividad] = useState(false)
   const [selectedMateriaId, setSelectedMateriaId] = useState<string | null>(null)
 
   const isLoading = ls || lm || la
-  const semestreActual = semestres?.find((s) => s.es_actual)
-  const materiasActuales = materias?.filter((m) => m.semestre_id === semestreActual?.id) ?? []
+  const materiasActuales = materias ?? []
 
   const handleAddActividad = (materiaId: string) => {
     setSelectedMateriaId(materiaId)
