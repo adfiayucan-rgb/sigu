@@ -52,7 +52,7 @@ function calcularGrading(actividades: ActividadConMateria[]) {
   }
 }
 
-export function   MateriaCard({
+export function MateriaCard({
   materia,
   actividades,
   onAddActividad,

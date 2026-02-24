@@ -1,24 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const semestreId = searchParams.get('semestreId')
-
+export async function GET() {
   const supabase = await createClient()
-
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  let query = supabase
+  const { data, error } = await supabase
     .from('materias')
-    .select('id, nombre, creditos, color_hex, semestre_id' )
-
-  if (semestreId) {
-    query = query.eq('semestre_id', semestreId)
-  }
-  
-  const { data, error } = await query.order('nombre')
+    .select('*, semestres(nombre)')
+    .order('nombre')
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)

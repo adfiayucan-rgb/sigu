@@ -43,33 +43,6 @@ export default function LoginPage() {
     }
   }
 
-  const handleLoginWithGoogle = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const supabase = createClient()
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          scopes: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/tasks',
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      })
-      if (error) throw error
-      router.push('/dashboard')
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Ocurrio un error')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
@@ -86,9 +59,6 @@ export default function LoginPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className='mb-6'>
-                <Button onClick={handleLoginWithGoogle}>Iniciar Sesion con Google</Button>
-              </div>
               <form onSubmit={handleLogin}>
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-2">
