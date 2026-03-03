@@ -1,25 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
+import { getActividades } from '@/services/actividades'
+import { AuthError } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { data, error } = await getActividades();
 
-  const { data, error } = await supabase
-    .from('actividades')
-    .select('*, materias(nombre, color_hex)')
-    .order('fecha_entrega', { ascending: true })
-
+  if (error instanceof AuthError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  const mapped = data?.map((a) => ({
-    ...a,
-    materia: a.materias ? { nombre: a.materias.nombre, color_hex: a.materias.color_hex } : null,
-    materias: undefined,
-  }))
-
-  return NextResponse.json(mapped)
+  return NextResponse.json(data)
 }
 
 export async function POST(request: Request) {

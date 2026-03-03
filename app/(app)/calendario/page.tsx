@@ -1,59 +1,91 @@
-'use client'
+"use client";
 
-import { useState, useMemo } from 'react'
-import { useActividades, useMaterias, useSemestres } from '@/lib/hooks'
-import { Calendar } from '@/components/ui/calendar'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
-import { format, isSameDay, differenceInHours } from 'date-fns'
-import { es } from 'date-fns/locale'
-import { AlertTriangle } from 'lucide-react'
+import { useState, useMemo } from "react";
+import { useActividades } from "@/lib/hooks";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { format, isSameDay } from "date-fns";
+import { es } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import { AddActividadDialog } from "@/components/materias/add-actividad-dialog";
+import { ActividadConMateria, ActividadResponse } from "@/lib/types";
+import { CardActividad } from "@/components/actividad/card-actividad";
+import { FormState } from "@/actions/actividad";
+import { toast } from "sonner";
 
 export default function CalendarioPage() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
-  const { data: semestres } = useSemestres()
-  const { data: materias } = useMaterias()
-  const { data: actividades, isLoading } = useActividades()
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [showAddActividad, setShowAddActividad] = useState(false);
+  const [selectedActividad, setSelectedActividad] = useState<ActividadConMateria | undefined>(undefined);
 
-  const semestreActual = semestres?.find((s) => s.es_actual)
-  const materiasActuales = materias?.filter((m) => m.semestre_id === semestreActual?.id) ?? []
-  const actividadesActuales = actividades?.filter((a) =>
-    materiasActuales.some((m) => m.id === a.materia_id)
-  ) ?? []
+  const { data: actividades, isLoading, mutate: mutateActividades } = useActividades();
 
   const datesWithEvents = useMemo(() => {
-    const dates = new Set<string>()
-    actividadesActuales.forEach((a) => {
-      dates.add(format(new Date(a.fecha_entrega), 'yyyy-MM-dd'))
-    })
-    return dates
-  }, [actividadesActuales])
+    const dates = new Set<string>();
+    actividades?.forEach((a) => {
+      dates.add(format(new Date(a.fecha_entrega), "yyyy-MM-dd"));
+    });
+    return dates;
+  }, [actividades]);
 
   const selectedActividades = useMemo(() => {
-    if (!selectedDate) return []
-    return actividadesActuales.filter((a) =>
-      isSameDay(new Date(a.fecha_entrega), selectedDate)
-    )
-  }, [selectedDate, actividadesActuales])
+    if (!selectedDate) return [];
+    return actividades?.filter((a) => isSameDay(new Date(a.fecha_entrega), selectedDate));
+  }, [selectedDate, actividades]);
 
   const modifiers = useMemo(() => {
     return {
-      hasEvent: (date: Date) => datesWithEvents.has(format(date, 'yyyy-MM-dd')),
-    }
-  }, [datesWithEvents])
+      hasEvent: (date: Date) => datesWithEvents.has(format(date, "yyyy-MM-dd")),
+    };
+  }, [datesWithEvents]);
 
   const modifiersClassNames = {
-    hasEvent: 'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:h-1 after:w-1 after:rounded-full after:bg-primary',
-  }
+    hasEvent:
+      "relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:h-1 after:w-1 after:rounded-full after:bg-primary",
+  };
+
+  const handleAddActividad = (actividad?: ActividadConMateria) => {
+    setSelectedActividad(actividad);
+    setShowAddActividad(true);
+  };
+
+  const handleOnSuccessActividad = (dbActividad: ActividadResponse) => {
+    mutateActividades((current: any) => {
+      if (!current) return [dbActividad];
+
+      // Buscamos si ya existe en la lista actual
+      const existe = current.some((a: any) => a.id === dbActividad.id);
+
+      if (existe) {
+        // Caso EDITAR
+        return current.map((a: any) => (a.id === dbActividad.id ? dbActividad : a));
+      } else {
+        // Caso CREAR
+        return [dbActividad, ...current];
+      }
+    }, false);
+
+    setShowAddActividad(false);
+    setSelectedActividad(undefined);
+  };
+
+  const handleEliminarActividad = async (state: FormState) => {
+    if (state.success && state.data) {
+      mutateActividades((currentData) => {
+        return currentData?.filter((act) => act.id !== state.data);
+      });
+      toast.success("Actividad eliminada con éxito");
+    } else {
+      toast.error(state.message);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-balance">Calendario</h1>
-        <p className="text-sm text-muted-foreground">
-          Vista mensual de entregas y examenes
-        </p>
+        <p className="text-sm text-muted-foreground">Vista mensual de entregas y examenes</p>
       </div>
 
       {isLoading ? (
@@ -69,69 +101,46 @@ export default function CalendarioPage() {
                 locale={es}
                 modifiers={modifiers}
                 modifiersClassNames={modifiersClassNames}
-                className="rounded-md"
+                className="rounded-md w-full"
               />
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">
-                {selectedDate
-                  ? format(selectedDate, "EEEE, d 'de' MMMM", { locale: es })
-                  : 'Selecciona una fecha'}
+              <CardTitle className="flex justify-between items-center text-sm font-medium">
+                {selectedDate ? format(selectedDate, "EEEE, d 'de' MMMM", { locale: es }) : "Selecciona una fecha"}
+                <Button onClick={() => handleAddActividad()}>Agregar Actividad</Button>
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
-              {selectedActividades.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-8 text-center">
-                  Sin actividades para este dia
-                </p>
+              {!selectedActividades || selectedActividades.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-8 text-center">Sin actividades para este dia</p>
               ) : (
                 selectedActividades.map((a) => {
-                  const hoursLeft = differenceInHours(new Date(a.fecha_entrega), new Date())
-                  const isUrgent = hoursLeft > 0 && hoursLeft < 24
-
                   return (
-                    <div
+                    <CardActividad
                       key={a.id}
-                      className={`flex items-center justify-between rounded-md border p-3 ${
-                        isUrgent ? 'border-destructive-foreground/50 bg-destructive/10' : ''
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="h-2.5 w-2.5 rounded-full shrink-0"
-                          style={{ backgroundColor: a.materia?.color_hex ?? '#3b82f6' }}
-                        />
-                        <div className="flex flex-col gap-0.5">
-                          <span className={`text-sm font-medium ${a.completada ? 'line-through text-muted-foreground' : ''}`}>
-                            {a.titulo}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {a.materia?.nombre} - {a.tipo}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {isUrgent && (
-                          <Badge variant="destructive" className="gap-1 text-xs">
-                            <AlertTriangle className="h-3 w-3" />
-                            Urgente
-                          </Badge>
-                        )}
-                        <span className="text-xs text-muted-foreground">
-                          {format(new Date(a.fecha_entrega), 'HH:mm')}
-                        </span>
-                      </div>
-                    </div>
-                  )
+                      actividad={a}
+                      handleAddActividad={handleAddActividad}
+                      onMutate={mutateActividades}
+                      onEliminar={(a) => handleEliminarActividad(a)}
+                    />
+                  );
                 })
               )}
             </CardContent>
           </Card>
         </div>
       )}
+
+      <AddActividadDialog
+        open={showAddActividad}
+        onOpenChange={setShowAddActividad}
+        onSuccess={(dbActividad) => handleOnSuccessActividad(dbActividad)}
+        actividad={selectedActividad}
+        selectedDate={selectedDate}
+      />
     </div>
-  )
+  );
 }

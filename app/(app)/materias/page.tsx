@@ -93,7 +93,6 @@ export default function MateriasPage() {
         <AddActividadDialog
           open={showAddActividad}
           onOpenChange={setShowAddActividad}
-          materiaId={selectedMateriaId}
           onSuccess={() => mutateActividades()}
         />
       )}

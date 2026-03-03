@@ -29,7 +29,10 @@ export type Actividad = {
   nota: number | null
   porcentaje_manual: number | null
   created_at: string
+  descripcion: string
 }
+
+export type ActividadResponse = Pick<ActividadConMateria, 'id' | 'materia_id' | 'titulo' | 'tipo' | 'fecha_entrega' | 'completada' | 'nota' | 'materia'>
 
 export type ActividadConMateria = Actividad & {
   materia: Pick<Materia, 'nombre' | 'color_hex'>
