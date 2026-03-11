@@ -55,7 +55,7 @@ export async function saveActividad(prevState: FormState, formData: FormData): P
 
   const dataParaGuardar = {
     ...data,
-    fecha_entrega: new Date(data.fecha_entrega).toISOString(),
+    fecha_entrega: `${data.fecha_entrega}:00-05:00`, // Hacemos que el campo de fecha entrega sea en Colombia
     user_id: user.id,
   };
 
