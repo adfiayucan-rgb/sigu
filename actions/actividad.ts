@@ -12,6 +12,7 @@ const ActividadSchema = z.object({
   fecha_entrega: z.string().min(1, "La fecha de entrega es requerida"),
   materia_id: z.string().min(1, "El ID de la materia es requerido"),
   id: z.string(),
+  nota: z.string().optional(),
 });
 
 export type FormState = {
@@ -45,7 +46,7 @@ export async function saveActividad(prevState: FormState, formData: FormData): P
     };
   }
 
-  const { id, ...data } = validatedFields.data;
+  const { id, nota, ...data } = validatedFields.data;
   const supabase = await createClient();
   const {
     data: { user },
@@ -57,6 +58,7 @@ export async function saveActividad(prevState: FormState, formData: FormData): P
     ...data,
     fecha_entrega: `${data.fecha_entrega}:00-05:00`, // Hacemos que el campo de fecha entrega sea en Colombia
     user_id: user.id,
+    nota: nota && nota.trim() !== '' ? parseFloat(nota) : null,
   };
 
   try {

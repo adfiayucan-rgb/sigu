@@ -4,12 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2 } from "lucide-react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import type { Materia, ActividadConMateria } from "@/lib/types";
-import { toast } from "sonner";
+import { Plus, Trash2, Pencil, Clock, MapPin } from "lucide-react";
+import type { Materia, ActividadConMateria, Horario, DIAS_SEMANA } from "@/lib/types";
+
+const DIAS_LABEL: Record<number, string> = {
+  0: 'Dom',
+  1: 'Lun',
+  2: 'Mar',
+  3: 'Mié',
+  4: 'Jue',
+  5: 'Vie',
+  6: 'Sáb',
+}
 
 function calcularGrading(actividades: ActividadConMateria[]) {
   const parciales = actividades.filter((a) => ["Parcial 1", "Parcial 2", "Parcial 3"].includes(a.tipo));
@@ -53,122 +59,105 @@ function calcularGrading(actividades: ActividadConMateria[]) {
 export function MateriaCard({
   materia,
   actividades,
+  horarios = [],
   onAddActividad,
+  onEditMateria,
   onDeleteMateria,
 }: {
   materia: Materia;
   actividades: ActividadConMateria[];
+  horarios?: Horario[];
   onAddActividad: () => void;
+  onEditMateria: () => void;
   onDeleteMateria: () => void;
 }) {
   const { acumulado70, porcentajeCubierto, notaProyectada, notaFinalNecesaria, parciales } =
     calcularGrading(actividades);
 
-  // const handleToggle = async (id: string, completada: boolean) => {
-  //   await fetch(`/api/actividades/${id}`, {
-  //     method: "PUT",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ completada }),
-  //   });
-  // };
-
-  // const handleNoteChange = async (id: string, nota: number) => {
-  //   if (nota < 0 || nota > 5) return;
-  //   await fetch(`/api/actividades/${id}`, {
-  //     method: "PUT",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ nota }),
-  //   });
-  //   toast.success("Nota actualizada");
-  // };
-
   return (
-    <Card className="relative overflow-hidden">
+    <Card className="relative overflow-hidden group">
       <div className="absolute top-0 left-0 h-1 w-full" style={{ backgroundColor: materia.color_hex }} />
-      <CardHeader className="flex flex-row items-center justify-between pb-3">
-        <div className="flex items-center gap-2">
-          <div className="h-3 w-3 rounded-full" style={{ backgroundColor: materia.color_hex }} />
-          <CardTitle className="text-base font-medium">{materia.nombre}</CardTitle>
-          <Badge variant="secondary" className="text-xs">
-            {materia.creditos} cr
-          </Badge>
+      <CardHeader className="flex flex-row items-start justify-between pb-3">
+        <div className="flex items-center gap-3">
+          <div 
+            className="h-10 w-10 rounded-xl flex items-center justify-center text-white font-semibold text-sm"
+            style={{ backgroundColor: materia.color_hex }}
+          >
+            {materia.nombre.slice(0, 2).toUpperCase()}
+          </div>
+          <div>
+            <CardTitle className="text-base font-semibold">{materia.nombre}</CardTitle>
+            <div className="flex items-center gap-2 mt-0.5">
+              <Badge variant="secondary" className="text-xs font-normal">
+                {materia.creditos} créditos
+              </Badge>
+            </div>
+          </div>
         </div>
-        <div className="flex gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onAddActividad}>
-            <Plus className="h-3.5 w-3.5" />
+        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onAddActividad}>
+            <Plus className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEditMateria}>
+            <Pencil className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 text-muted-foreground hover:text-destructive-foreground"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive"
             onClick={onDeleteMateria}
           >
-            <Trash2 className="h-3.5 w-3.5" />
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
+        {/* Horarios */}
+        {horarios.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {horarios.map((h, i) => (
+              <div key={i} className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
+                <Clock className="h-3 w-3" />
+                <span className="font-medium">{DIAS_LABEL[h.dia]}</span>
+                <span>{h.hora_inicio.slice(0, 5)} - {h.hora_fin.slice(0, 5)}</span>
+                {h.salon && (
+                  <>
+                    <MapPin className="h-3 w-3 ml-1" />
+                    <span>{h.salon}</span>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Grade summary */}
-        <div className="grid grid-cols-3 gap-3 text-center">
+        <div className="grid grid-cols-3 gap-3 text-center bg-muted/30 rounded-lg p-3">
           <div className="flex flex-col gap-0.5">
             <span className="text-xs text-muted-foreground">Acumulado 70%</span>
-            <span className="text-lg font-semibold">{acumulado70.toFixed(1)}</span>
+            <span className="text-xl font-bold" style={{ color: materia.color_hex }}>{acumulado70.toFixed(1)}</span>
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="text-xs text-muted-foreground">Proyectada</span>
-            <span className="text-lg font-semibold">{porcentajeCubierto > 0 ? notaProyectada.toFixed(1) : "--"}</span>
+            <span className="text-xl font-bold">{porcentajeCubierto > 0 ? notaProyectada.toFixed(1) : "--"}</span>
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="text-xs text-muted-foreground">Necesitas Final</span>
             <span
-              className={`text-lg font-semibold ${notaFinalNecesaria > 4.5 ? "text-destructive-foreground" : notaFinalNecesaria > 3.5 ? "text-chart-4" : "text-primary"}`}
+              className={`text-xl font-bold ${notaFinalNecesaria > 4.5 ? "text-destructive" : notaFinalNecesaria > 3.5 ? "text-chart-4" : "text-primary"}`}
             >
               {parciales.filter((p) => p.nota !== null).length > 0 ? notaFinalNecesaria.toFixed(1) : "--"}
             </span>
           </div>
         </div>
 
-        <Progress value={Math.min(porcentajeCubierto, 100)} className="h-1.5" />
-
-        {/* Activities list */}
-        {/* <div className="flex flex-col gap-2">
-          {actividades.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-2">Sin actividades</p>
-          ) : (
-            actividades.slice(0, 6).map((a) => (
-              <div key={a.id} className="flex items-center gap-3 text-sm">
-                <Checkbox
-                  checked={a.completada}
-                  onCheckedChange={(checked) => handleToggle(a.id, checked as boolean)}
-                />
-                <span className={`flex-1 truncate ${a.completada ? "line-through text-muted-foreground" : ""}`}>
-                  {a.titulo}
-                </span>
-                <Badge variant="outline" className="text-xs shrink-0">
-                  {a.tipo}
-                </Badge>
-                {["Parcial 1", "Parcial 2", "Parcial 3", "Final"].includes(a.tipo) && (
-                  <input
-                    type="number"
-                    min={0}
-                    max={5}
-                    step={0.1}
-                    placeholder="--"
-                    defaultValue={a.nota ?? ""}
-                    onBlur={(e) => {
-                      const val = parseFloat(e.target.value);
-                      if (!isNaN(val)) handleNoteChange(a.id, val);
-                    }}
-                    className="w-12 rounded border bg-transparent px-1.5 py-0.5 text-center text-xs"
-                  />
-                )}
-                <span className="text-xs text-muted-foreground whitespace-nowrap">
-                  {format(new Date(a.fecha_entrega), "dd/MM", { locale: es })}
-                </span>
-              </div>
-            ))
-          )}
-        </div> */}
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between text-xs">
+            <span className="text-muted-foreground">Progreso evaluaciones</span>
+            <span className="font-medium">{Math.min(porcentajeCubierto, 100).toFixed(0)}%</span>
+          </div>
+          <Progress value={Math.min(porcentajeCubierto, 100)} className="h-2" />
+        </div>
       </CardContent>
     </Card>
   );

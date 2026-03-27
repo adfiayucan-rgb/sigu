@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -11,56 +11,70 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { COLORES_MATERIA, DIAS_SEMANA } from '@/lib/types'
+import { COLORES_MATERIA, DIAS_SEMANA, type Materia, type Horario } from '@/lib/types'
 import { toast } from 'sonner'
 import { Plus, Trash2, Clock } from 'lucide-react'
 
 type HorarioLocal = {
+  id?: string
   dia: number
   hora_inicio: string
   hora_fin: string
   salon: string
+  isNew?: boolean
 }
 
-export function AddMateriaDialog({
+export function EditMateriaDialog({
   open,
   onOpenChange,
-  semestreId,
+  materia,
+  horarios,
   onSuccess,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  semestreId: string
+  materia: Materia
+  horarios: Horario[]
   onSuccess: () => void
 }) {
-  const [nombre, setNombre] = useState('')
-  const [creditos, setCreditos] = useState('3')
-  const [colorHex, setColorHex] = useState(COLORES_MATERIA[0])
-  const [horarios, setHorarios] = useState<HorarioLocal[]>([])
+  const [nombre, setNombre] = useState(materia.nombre)
+  const [creditos, setCreditos] = useState(materia.creditos.toString())
+  const [colorHex, setColorHex] = useState(materia.color_hex)
+  const [horariosLocal, setHorariosLocal] = useState<HorarioLocal[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
+  useEffect(() => {
+    if (open) {
+      setNombre(materia.nombre)
+      setCreditos(materia.creditos.toString())
+      setColorHex(materia.color_hex)
+      setHorariosLocal(
+        horarios.map((h) => ({
+          id: h.id,
+          dia: h.dia,
+          hora_inicio: h.hora_inicio.slice(0, 5),
+          hora_fin: h.hora_fin.slice(0, 5),
+          salon: h.salon || '',
+        }))
+      )
+    }
+  }, [open, materia, horarios])
+
   const addHorario = () => {
-    setHorarios((prev) => [
+    setHorariosLocal((prev) => [
       ...prev,
-      { dia: 1, hora_inicio: '08:00', hora_fin: '10:00', salon: '' },
+      { dia: 1, hora_inicio: '08:00', hora_fin: '10:00', salon: '', isNew: true },
     ])
   }
 
   const removeHorario = (index: number) => {
-    setHorarios((prev) => prev.filter((_, i) => i !== index))
+    setHorariosLocal((prev) => prev.filter((_, i) => i !== index))
   }
 
   const updateHorario = (index: number, field: keyof HorarioLocal, value: string | number) => {
-    setHorarios((prev) =>
+    setHorariosLocal((prev) =>
       prev.map((h, i) => (i === index ? { ...h, [field]: value } : h))
     )
-  }
-
-  const resetForm = () => {
-    setNombre('')
-    setCreditos('3')
-    setColorHex(COLORES_MATERIA[0])
-    setHorarios([])
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,23 +82,28 @@ export function AddMateriaDialog({
     setIsLoading(true)
 
     try {
-      // Create materia
-      const res = await fetch('/api/materias', {
-        method: 'POST',
+      // Update materia
+      const materiaRes = await fetch(`/api/materias/${materia.id}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           nombre,
           creditos: parseInt(creditos),
           color_hex: colorHex,
-          semestre_id: semestreId,
         }),
       })
+      if (!materiaRes.ok) throw new Error('Error al actualizar materia')
 
-      if (!res.ok) throw new Error('Error al crear materia')
-      const materia = await res.json()
+      // Delete removed horarios
+      const currentIds = horariosLocal.filter((h) => h.id).map((h) => h.id)
+      const deletedHorarios = horarios.filter((h) => !currentIds.includes(h.id))
+      for (const h of deletedHorarios) {
+        await fetch(`/api/horarios/${h.id}`, { method: 'DELETE' })
+      }
 
-      // Create horarios
-      for (const h of horarios) {
+      // Add new horarios
+      const newHorarios = horariosLocal.filter((h) => h.isNew || !h.id)
+      for (const h of newHorarios) {
         await fetch('/api/horarios', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -98,12 +117,11 @@ export function AddMateriaDialog({
         })
       }
 
-      toast.success('Materia creada')
+      toast.success('Materia actualizada')
       onSuccess()
       onOpenChange(false)
-      resetForm()
     } catch {
-      toast.error('Error al crear materia')
+      toast.error('Error al actualizar materia')
     } finally {
       setIsLoading(false)
     }
@@ -113,7 +131,7 @@ export function AddMateriaDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Nueva Materia</DialogTitle>
+          <DialogTitle>Editar Materia</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div className="grid gap-2">
@@ -168,13 +186,13 @@ export function AddMateriaDialog({
               </Button>
             </div>
 
-            {horarios.length === 0 ? (
+            {horariosLocal.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-4 border border-dashed rounded-lg">
-                Sin horario. Puedes agregar las clases semanales.
+                Sin horario registrado. Agrega las clases semanales.
               </p>
             ) : (
               <div className="flex flex-col gap-3">
-                {horarios.map((h, idx) => (
+                {horariosLocal.map((h, idx) => (
                   <div key={idx} className="flex flex-col gap-2 p-3 border rounded-lg bg-muted/30">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium text-muted-foreground">
@@ -239,7 +257,7 @@ export function AddMateriaDialog({
           </div>
 
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Creando...' : 'Crear Materia'}
+            {isLoading ? 'Guardando...' : 'Guardar Cambios'}
           </Button>
         </form>
       </DialogContent>
