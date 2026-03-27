@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import type { Semestre, Materia, ActividadConMateria } from '@/lib/types'
+import type { Semestre, Materia, ActividadConMateria, HorarioConMateria } from '@/lib/types'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -18,4 +18,8 @@ export function useMaterias(semestreId?: string) {
 
 export function useActividades() {
   return useSWR<ActividadConMateria[]>('/api/actividades', fetcher)
+}
+
+export function useHorarios() {
+  return useSWR<HorarioConMateria[]>('/api/horarios', fetcher)
 }

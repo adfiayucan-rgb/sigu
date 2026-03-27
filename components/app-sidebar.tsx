@@ -9,6 +9,7 @@ import {
   Settings,
   LogOut,
   GraduationCap,
+  Clock,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -27,6 +28,7 @@ import {
 const navItems = [
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { title: 'Materias', href: '/materias', icon: BookOpen },
+  { title: 'Horario', href: '/horario', icon: Clock },
   { title: 'Calendario', href: '/calendario', icon: CalendarDays },
   { title: 'Ajustes', href: '/ajustes', icon: Settings },
 ]

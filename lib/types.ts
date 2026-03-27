@@ -38,6 +38,34 @@ export type ActividadConMateria = Actividad & {
   materia: Pick<Materia, 'nombre' | 'color_hex'>
 }
 
+export type Horario = {
+  id: string
+  user_id: string
+  materia_id: string
+  dia: number // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+  hora_inicio: string // "HH:mm:ss"
+  hora_fin: string // "HH:mm:ss"
+  salon: string | null
+}
+
+export type HorarioConMateria = Horario & {
+  materia: Pick<Materia, 'nombre' | 'color_hex'>
+}
+
+export type MateriaConHorarios = Materia & {
+  horarios: Horario[]
+}
+
+export const DIAS_SEMANA = [
+  { value: 1, label: 'Lunes' },
+  { value: 2, label: 'Martes' },
+  { value: 3, label: 'Miércoles' },
+  { value: 4, label: 'Jueves' },
+  { value: 5, label: 'Viernes' },
+  { value: 6, label: 'Sábado' },
+  { value: 0, label: 'Domingo' },
+] as const
+
 export const TIPOS_ACTIVIDAD = [
   'Parcial 1',
   'Parcial 2',
