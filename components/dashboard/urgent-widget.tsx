@@ -6,6 +6,7 @@ import { Clock, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { format, differenceInHours, isPast, isToday, isTomorrow } from 'date-fns'
 import { es } from 'date-fns/locale'
 import type { ActividadConMateria } from '@/lib/types'
+import { formatearA12Horas } from '@/lib/utils'
 
 export function UrgentWidget({ actividades }: { actividades: ActividadConMateria[] }) {
   const now = new Date()
@@ -82,7 +83,7 @@ export function UrgentWidget({ actividades }: { actividades: ActividadConMateria
                       {getDateLabel(a.fecha_entrega)}
                     </span>
                     <span className="text-[10px] text-muted-foreground">
-                      {format(new Date(a.fecha_entrega), 'HH:mm', { locale: es })}
+                      {formatearA12Horas(format(new Date(a.fecha_entrega), 'HH:mm', { locale: es }))}
                     </span>
                   </div>
                 </div>

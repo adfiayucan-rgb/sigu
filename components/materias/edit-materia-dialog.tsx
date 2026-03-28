@@ -1,28 +1,23 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { COLORES_MATERIA, DIAS_SEMANA, type Materia, type Horario } from '@/lib/types'
-import { toast } from 'sonner'
-import { Plus, Trash2, Clock } from 'lucide-react'
+import { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { COLORES_MATERIA, DIAS_SEMANA, type Materia, type Horario } from "@/lib/types";
+import { toast } from "sonner";
+import { Plus, Trash2, Clock } from "lucide-react";
 
 type HorarioLocal = {
-  id?: string
-  dia: number
-  hora_inicio: string
-  hora_fin: string
-  salon: string
-  isNew?: boolean
-}
+  id?: string;
+  dia: number;
+  hora_inicio: string;
+  hora_fin: string;
+  salon: string;
+  isNew?: boolean;
+};
 
 export function EditMateriaDialog({
   open,
@@ -31,82 +26,77 @@ export function EditMateriaDialog({
   horarios,
   onSuccess,
 }: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  materia: Materia
-  horarios: Horario[]
-  onSuccess: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  materia: Materia;
+  horarios: Horario[];
+  onSuccess: () => void;
 }) {
-  const [nombre, setNombre] = useState(materia.nombre)
-  const [creditos, setCreditos] = useState(materia.creditos.toString())
-  const [colorHex, setColorHex] = useState(materia.color_hex)
-  const [horariosLocal, setHorariosLocal] = useState<HorarioLocal[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [nombre, setNombre] = useState(materia.nombre);
+  const [creditos, setCreditos] = useState(materia.creditos.toString());
+  const [colorHex, setColorHex] = useState(materia.color_hex);
+  const [horariosLocal, setHorariosLocal] = useState<HorarioLocal[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (open) {
-      setNombre(materia.nombre)
-      setCreditos(materia.creditos.toString())
-      setColorHex(materia.color_hex)
+      setNombre(materia.nombre);
+      setCreditos(materia.creditos.toString());
+      setColorHex(materia.color_hex);
       setHorariosLocal(
         horarios.map((h) => ({
           id: h.id,
           dia: h.dia,
           hora_inicio: h.hora_inicio.slice(0, 5),
           hora_fin: h.hora_fin.slice(0, 5),
-          salon: h.salon || '',
-        }))
-      )
+          salon: h.salon || "",
+        })),
+      );
     }
-  }, [open, materia, horarios])
+  }, [open, materia, horarios]);
 
   const addHorario = () => {
-    setHorariosLocal((prev) => [
-      ...prev,
-      { dia: 1, hora_inicio: '08:00', hora_fin: '10:00', salon: '', isNew: true },
-    ])
-  }
+    setHorariosLocal((prev) => [...prev, { dia: 1, hora_inicio: "08:00", hora_fin: "10:00", salon: "", isNew: true }]);
+  };
 
   const removeHorario = (index: number) => {
-    setHorariosLocal((prev) => prev.filter((_, i) => i !== index))
-  }
+    setHorariosLocal((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const updateHorario = (index: number, field: keyof HorarioLocal, value: string | number) => {
-    setHorariosLocal((prev) =>
-      prev.map((h, i) => (i === index ? { ...h, [field]: value } : h))
-    )
-  }
+    setHorariosLocal((prev) => prev.map((h, i) => (i === index ? { ...h, [field]: value } : h)));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
       // Update materia
       const materiaRes = await fetch(`/api/materias/${materia.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nombre,
           creditos: parseInt(creditos),
           color_hex: colorHex,
         }),
-      })
-      if (!materiaRes.ok) throw new Error('Error al actualizar materia')
+      });
+      if (!materiaRes.ok) throw new Error("Error al actualizar materia");
 
       // Delete removed horarios
-      const currentIds = horariosLocal.filter((h) => h.id).map((h) => h.id)
-      const deletedHorarios = horarios.filter((h) => !currentIds.includes(h.id))
+      const currentIds = horariosLocal.filter((h) => h.id).map((h) => h.id);
+      const deletedHorarios = horarios.filter((h) => !currentIds.includes(h.id));
       for (const h of deletedHorarios) {
-        await fetch(`/api/horarios/${h.id}`, { method: 'DELETE' })
+        await fetch(`/api/horarios/${h.id}`, { method: "DELETE" });
       }
 
       // Add new horarios
-      const newHorarios = horariosLocal.filter((h) => h.isNew || !h.id)
+      const newHorarios = horariosLocal.filter((h) => h.isNew || !h.id);
       for (const h of newHorarios) {
-        await fetch('/api/horarios', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        await fetch("/api/horarios", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             materia_id: materia.id,
             dia: h.dia,
@@ -114,18 +104,46 @@ export function EditMateriaDialog({
             hora_fin: h.hora_fin,
             salon: h.salon || null,
           }),
-        })
+        });
       }
 
-      toast.success('Materia actualizada')
-      onSuccess()
-      onOpenChange(false)
+      // Update horarios
+      const updateHorarios = horariosLocal.filter((h) => {
+        const original = horarios.find((h) => h.id === h.id);
+
+        return (
+          original &&
+          (original.dia !== h.dia ||
+            original.hora_inicio.slice(0, 5) !== h.hora_inicio ||
+            original.hora_fin.slice(0, 5) !== h.hora_fin ||
+            original.salon ||
+            "" !== h.salon)
+        );
+      });
+
+      for (const h of updateHorarios) {
+        await fetch(`/api/horarios/${h.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            materia_id: materia.id,
+            dia: h.dia,
+            hora_inicio: h.hora_inicio,
+            hora_fin: h.hora_fin,
+            salon: h.salon || null,
+          }),
+        });
+      }
+
+      toast.success("Materia actualizada");
+      onSuccess();
+      onOpenChange(false);
     } catch {
-      toast.error('Error al actualizar materia')
+      toast.error("Error al actualizar materia");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -165,7 +183,7 @@ export function EditMateriaDialog({
                   type="button"
                   onClick={() => setColorHex(c)}
                   className={`h-7 w-7 rounded-full transition-transform ${
-                    colorHex === c ? 'scale-125 ring-2 ring-ring ring-offset-2 ring-offset-background' : ''
+                    colorHex === c ? "scale-125 ring-2 ring-ring ring-offset-2 ring-offset-background" : ""
                   }`}
                   style={{ backgroundColor: c }}
                 />
@@ -195,9 +213,7 @@ export function EditMateriaDialog({
                 {horariosLocal.map((h, idx) => (
                   <div key={idx} className="flex flex-col gap-2 p-3 border rounded-lg bg-muted/30">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-muted-foreground">
-                        Clase {idx + 1}
-                      </span>
+                      <span className="text-xs font-medium text-muted-foreground">Clase {idx + 1}</span>
                       <Button
                         type="button"
                         variant="ghost"
@@ -210,10 +226,7 @@ export function EditMateriaDialog({
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="col-span-2">
-                        <Select
-                          value={h.dia.toString()}
-                          onValueChange={(v) => updateHorario(idx, 'dia', parseInt(v))}
-                        >
+                        <Select value={h.dia.toString()} onValueChange={(v) => updateHorario(idx, "dia", parseInt(v))}>
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Día" />
                           </SelectTrigger>
@@ -230,7 +243,7 @@ export function EditMateriaDialog({
                         <Input
                           type="time"
                           value={h.hora_inicio}
-                          onChange={(e) => updateHorario(idx, 'hora_inicio', e.target.value)}
+                          onChange={(e) => updateHorario(idx, "hora_inicio", e.target.value)}
                           required
                         />
                       </div>
@@ -238,7 +251,7 @@ export function EditMateriaDialog({
                         <Input
                           type="time"
                           value={h.hora_fin}
-                          onChange={(e) => updateHorario(idx, 'hora_fin', e.target.value)}
+                          onChange={(e) => updateHorario(idx, "hora_fin", e.target.value)}
                           required
                         />
                       </div>
@@ -246,7 +259,7 @@ export function EditMateriaDialog({
                         <Input
                           placeholder="Salón (opcional)"
                           value={h.salon}
-                          onChange={(e) => updateHorario(idx, 'salon', e.target.value)}
+                          onChange={(e) => updateHorario(idx, "salon", e.target.value)}
                         />
                       </div>
                     </div>
@@ -257,10 +270,10 @@ export function EditMateriaDialog({
           </div>
 
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Guardando...' : 'Guardar Cambios'}
+            {isLoading ? "Guardando..." : "Guardar Cambios"}
           </Button>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

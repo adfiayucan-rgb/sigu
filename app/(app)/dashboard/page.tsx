@@ -12,6 +12,7 @@ import { BookOpen, Calendar, Clock, Target } from 'lucide-react'
 import { useMemo } from 'react'
 import { format, isToday, isTomorrow, differenceInDays } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { formatearA12Horas } from '@/lib/utils'
 
 const DIAS_LABEL: Record<number, string> = {
   0: 'Domingo',
@@ -126,7 +127,7 @@ export default function DashboardPage() {
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <Clock className="h-3 w-3" />
                             <span>
-                              {h.hora_inicio.slice(0, 5)} - {h.hora_fin.slice(0, 5)}
+                              {formatearA12Horas(h.hora_inicio.slice(0, 5))} - {formatearA12Horas(h.hora_fin.slice(0, 5))}
                             </span>
                             {h.salon && (
                               <>

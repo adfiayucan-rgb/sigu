@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Zap, Send, BookOpen, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import type { HorarioConMateria, Materia } from '@/lib/types'
+import { formatearA12Horas } from '@/lib/utils'
 
 function getCurrentClassMateria(
   horarios: HorarioConMateria[],
@@ -45,7 +46,7 @@ function getCurrentClassMateria(
   return {
     materia: null,
     horario: null,
-    message: `No hay clases programadas para ${diasSemana[currentDay]} a las ${now.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })}`,
+    message: `No hay clases programadas para ${diasSemana[currentDay]} a las ${formatearA12Horas(now.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' }))}`,
   }
 }
 

@@ -27,6 +27,7 @@ import { deleteActividadAction, FormState, toggleActividad } from "@/actions/act
 import { Actividad, ActividadConMateria } from "@/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
+import { formatearA12Horas } from "@/lib/utils";
 
 interface Props {
   actividad: ActividadConMateria;
@@ -178,7 +179,7 @@ export function CardActividad({ actividad, handleAddActividad, onMutate, onElimi
               }`}
             >
               <Clock className="size-3" />
-              {format(new Date(actividad.fecha_entrega), "HH:mm")}
+              {formatearA12Horas(format(new Date(actividad.fecha_entrega), "HH:mm"))}
               {false && ( // TODO: Implement this
                 <span className="ml-0.5 rounded-full bg-destructive/10 px-1.5 py-0.5 text-[10px] font-semibold text-destructive-foreground">
                   Vencida
