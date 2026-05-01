@@ -10,6 +10,7 @@ import {
   LogOut,
   GraduationCap,
   Clock,
+  FileText,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -30,6 +31,7 @@ const navItems = [
   { title: 'Materias', href: '/materias', icon: BookOpen },
   { title: 'Horario', href: '/horario', icon: Clock },
   { title: 'Calendario', href: '/calendario', icon: CalendarDays },
+  { title: 'Conocimiento', href: '/conocimiento', icon: FileText },
   { title: 'Ajustes', href: '/ajustes', icon: Settings },
 ]
 
