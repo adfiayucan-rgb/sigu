@@ -74,7 +74,7 @@ export async function POST(request: Request) {
   try {
     // Subir a Vercel Blob (más económico que Supabase Storage)
     const blob = await put(`archivos/${user.id}/${file.name}`, file, {
-      access: 'public',
+      access: 'private',
     })
 
     // Guardar metadata en Supabase
@@ -95,6 +95,8 @@ export async function POST(request: Request) {
       .single()
 
     if (error) {
+      console.log(error);
+      
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
