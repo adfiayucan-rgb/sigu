@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
+import { useApp } from "@/context/app-context";
 
 interface Props {
   actividad?: ActividadConMateria;
@@ -22,13 +23,14 @@ interface Props {
   onSuccess: (dbActividad: ActividadResponse) => void;
 }
 
-const TIPOS_CON_NOTA = ['Parcial 1', 'Parcial 2', 'Parcial 3', 'Final', 'Quiz']
+const TIPOS_CON_NOTA = ["Parcial 1", "Parcial 2", "Parcial 3", "Final", "Quiz"];
 
 export function FormActividad({ actividad, selectedDate, onSuccess }: Props) {
-  const { data: materias, isLoading: lm } = useMaterias();
+  const { semestreId } = useApp();
+  const { data: materias, isLoading: lm } = useMaterias(semestreId);
   const initialState: FormState = { message: null, errors: {}, data: null };
-  const [tipoSeleccionado, setTipoSeleccionado] = useState(actividad?.tipo || '');
-  const [nota, setNota] = useState<string>(actividad?.nota?.toString() || '');
+  const [tipoSeleccionado, setTipoSeleccionado] = useState(actividad?.tipo || "");
+  const [nota, setNota] = useState<string>(actividad?.nota?.toString() || "");
 
   const [state, formAction, isPending] = useActionState(actions.actividad.saveActividad, initialState);
 
@@ -64,8 +66,8 @@ export function FormActividad({ actividad, selectedDate, onSuccess }: Props) {
       ) : (
         <div className="flex flex-col gap-4">
           <input type="text" name="id" defaultValue={state.fields?.id ?? actividad?.id} hidden readOnly />
-          <input type="text" name="nota" value={nota || ''} hidden readOnly />
-          
+          <input type="text" name="nota" value={nota || ""} hidden readOnly />
+
           <div className="grid gap-2">
             <Label htmlFor="titulo">Titulo</Label>
             <Input
@@ -77,15 +79,11 @@ export function FormActividad({ actividad, selectedDate, onSuccess }: Props) {
             />
             <FormError errors={state.errors?.titulo} />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="grid col-span-1 gap-2">
               <Label>Tipo</Label>
-              <Select 
-                value={tipoSeleccionado} 
-                name="tipo"
-                onValueChange={setTipoSeleccionado}
-              >
+              <Select value={tipoSeleccionado} name="tipo" onValueChange={setTipoSeleccionado}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona un tipo" />
                 </SelectTrigger>
@@ -98,18 +96,30 @@ export function FormActividad({ actividad, selectedDate, onSuccess }: Props) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid col-span-1 gap-2">
+
+            <div className="grid col-span-1 gap-2 min-w-0">          
               <Label htmlFor="materia">Materia</Label>
-              <Select value={actividad?.materia_id} name="materia_id">
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona una materia" />
+              <Select value={actividad?.materia_id} name="materia_id">                
+                <SelectTrigger className="w-full flex items-center justify-between overflow-hidden">                
+                  <div className="truncate text-left pr-2">
+                    <SelectValue placeholder="Selecciona una materia" />
+                  </div>
                 </SelectTrigger>
-                <SelectContent>
-                  {materias?.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      {m.nombre}
+
+                <SelectContent>                  
+                  {materias && materias.length > 0 ? (
+                    materias.map((m) => (
+                      <SelectItem key={m.id} value={m.id}>                        
+                        <span className="block truncate max-w-50 md:max-w-75" title={m.nombre}>
+                          {m.nombre}
+                        </span>
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="none" disabled className="text-muted-foreground text-center py-2">
+                      No hay materias disponibles
                     </SelectItem>
-                  ))}
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -184,7 +194,7 @@ export function FormActividad({ actividad, selectedDate, onSuccess }: Props) {
               placeholder="Descripción de la actividad"
             />
           </div>
-          
+
           <LoadingButton type="submit" isLoading={isPending} loadingText={actividad ? "Actualizando..." : "Creando..."}>
             {actividad ? "Actualizar Actividad" : "Crear Actividad"}
           </LoadingButton>

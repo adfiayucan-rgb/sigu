@@ -18,8 +18,10 @@ import { Plus, Trash2, Star } from 'lucide-react'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { useApp } from '@/context/app-context'
 
 export default function AjustesPage() {
+  const { cambiarSemestreId } = useApp()
   const { data: semestres, isLoading, mutate } = useSemestres()
   const [showAdd, setShowAdd] = useState(false)
   const [nombre, setNombre] = useState('')
@@ -78,6 +80,7 @@ export default function AjustesPage() {
     })
 
     toast.success('Semestre actualizado')
+    cambiarSemestreId(id)
     mutate()
   }
 
