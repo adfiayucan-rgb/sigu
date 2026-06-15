@@ -10,7 +10,7 @@ export function useSemestres() {
 export function useMaterias(semestreId?: string) {
   const url = semestreId ? `/api/materias?semestreId=${semestreId}` : '/api/materias'
 
-  return useSWR<Materia[]>('/api/materias', fetcher, {
+  return useSWR<Materia[]>(url, fetcher, {
     dedupingInterval: 10000,
     revalidateOnFocus: false
   })
