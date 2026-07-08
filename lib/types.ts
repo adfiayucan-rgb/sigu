@@ -15,7 +15,13 @@ export type Materia = {
   nombre: string
   creditos: number
   color_hex: string
-  created_at: string
+  created_at: string,
+  profesor: string
+}
+
+export type MateriaWithDetails = Materia & {
+  horarios: Horario[]
+  actividades: Actividad[]
 }
 
 export type Actividad = {
@@ -30,7 +36,10 @@ export type Actividad = {
   porcentaje_manual: number | null
   created_at: string
   descripcion: string
+  es_examen: boolean
 }
+
+
 
 export type ActividadResponse = Pick<ActividadConMateria, 'id' | 'materia_id' | 'titulo' | 'tipo' | 'fecha_entrega' | 'completada' | 'nota' | 'materia'>
 
@@ -40,12 +49,11 @@ export type ActividadConMateria = Actividad & {
 
 export type Horario = {
   id: string
-  user_id: string
   materia_id: string
   dia: number // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
   hora_inicio: string // "HH:mm:ss"
   hora_fin: string // "HH:mm:ss"
-  salon: string | null
+  salon?: string
 }
 
 export type HorarioConMateria = Horario & {

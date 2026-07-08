@@ -49,3 +49,9 @@ export const formatearA12Horas = (hora24: string): string => {
 
   return `${horas}:${minutosFormateados} ${periodo}`;
 };
+
+
+export const obtenerDiaDeLaSemana = (dia: number): string => {
+  const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  return dias[dia];
+};
