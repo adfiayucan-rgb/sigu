@@ -4,7 +4,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-import { AppProvider } from "@/context/app-context";
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -47,7 +46,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body className="font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <AppProvider>{children}</AppProvider>
+          {children}
           <Toaster />
         </ThemeProvider>
         <Analytics />
