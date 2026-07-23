@@ -7,6 +7,8 @@ import { MateriaRowActions } from "@/app/(app)/materias/_components/materia-row-
 
 type Props = {
   materia: MateriaWithDetails;
+  onEdit: (materia: MateriaWithDetails) => void;
+  onDelete: (materia: MateriaWithDetails) => void;
 };
 
 const DIAS_LABEL: Record<number, string> = {
@@ -58,7 +60,7 @@ function calcularGrading(actividades: Actividad[]) {
   };
 }
 
-export function MateriaCard({ materia }: Props) {
+export function MateriaCard({ materia, onDelete, onEdit }: Props) {
   const { acumulado70, porcentajeCubierto, notaProyectada, notaFinalNecesaria, parciales } = calcularGrading(
     materia.actividades,
   );
@@ -86,7 +88,7 @@ export function MateriaCard({ materia }: Props) {
           </div>
 
           <div className="flex gap-1">
-            <MateriaRowActions materia={materia} />
+            <MateriaRowActions materia={materia} onDelete={onDelete} onEdit={onEdit} />
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

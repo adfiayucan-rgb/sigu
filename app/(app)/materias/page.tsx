@@ -1,5 +1,4 @@
 import { getMateriasConDetalles } from "@/lib/materias/queries";
-import { MateriaHeader } from "./_components/materia-header";
 import { MateriaStats } from "./_components/materia-stats";
 import { MateriaList } from "./_components/materia-list";
 
@@ -8,12 +7,7 @@ export default async function MateriasPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Header */}
-      <MateriaHeader />
-
-      {/* Stats Cards */}
       <MateriaStats materias={materias} />
-
       <MateriaList materias={materias} />
     </div>
   );

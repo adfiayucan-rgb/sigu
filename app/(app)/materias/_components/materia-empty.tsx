@@ -1,11 +1,11 @@
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { BookPlus } from "lucide-react";
 import { MateriaNewButton } from "./materia-new-button";
-import { getSemestreActual } from "@/lib/semestres/queries";
+// import { getSemestreActual } from "@/lib/semestres/queries";
 
 
 export async function MateriaEmpty() {
-  const { id } = await getSemestreActual();
+  // const { id } = await getSemestreActual();
   return (
     <Empty className="border border-dashed">
       <EmptyHeader>
@@ -18,7 +18,7 @@ export async function MateriaEmpty() {
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <MateriaNewButton semestreId={id} />
+        
       </EmptyContent>
     </Empty>
   );

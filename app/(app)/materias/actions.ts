@@ -2,9 +2,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { MateriaFormData, materiaSchema } from "./schemas";
 import { updateTag } from "next/cache";
-import { saveHorariosByMateria } from "@/lib/horario/mutations";
 import { requireUser } from "@/lib/supabase/auth";
 import { deleteMateria } from "@/lib/materias/mutations";
+import { getSemestreActual } from "@/lib/semestres/queries";
 
 export type MateriaFormState = {
   success: boolean;
@@ -12,7 +12,7 @@ export type MateriaFormState = {
   errors?: Record<string, string[]>;
 };
 
-export async function createMateria(
+export async function createMateriaAction(
   _prevState: MateriaFormState,
   formData: MateriaFormData,
 ): Promise<MateriaFormState> {
@@ -38,14 +38,23 @@ export async function createMateria(
     };
   }
 
-  const { horarios, ...materiaData } = parsed.data;
+  const { id: semestreId } = await getSemestreActual();
+
+  if (!semestreId) {
+    return {
+      success: false,
+      message: "No se obtuvo el semestre actual."
+    }
+  }
+
+  const materiaCrear: MateriaFormData = {
+    ...parsed.data,
+    semestre_id: semestreId
+  }
 
   const { data: materiaCreada, error: materiaError } = await supabase
     .from("materias")
-    .insert({
-      ...materiaData,
-      user_id: user.id,
-    })
+    .insert(materiaCrear)
     .select("id")
     .single();
 
@@ -56,17 +65,6 @@ export async function createMateria(
     };
   }
 
-  if (horarios) {
-    try {
-      await saveHorariosByMateria(horarios, materiaCreada.id);
-    } catch (err) {
-      return {
-        success: false,
-        message: err instanceof Error ? err.message : "Error al guardar los horarios.",
-      };
-    }
-  }
-
   updateTag(`materias-${user.id}`);
 
   return {
@@ -75,7 +73,7 @@ export async function createMateria(
   };
 }
 
-export async function updateMateria(
+export async function updateMateriaAction(
   id: string,
   _prevState: MateriaFormState,
   formData: MateriaFormData,
@@ -103,13 +101,7 @@ export async function updateMateria(
     };
   }
 
-  const { horarios, ...materiaData } = parsed.data;
-
-  const { error: materiaError } = await supabase
-    .from("materias")
-    .update(materiaData)
-    .eq("id", id)
-    .eq("user_id", user.id);
+  const { error: materiaError } = await supabase.from("materias").update(parsed.data).eq("id", id);
 
   if (materiaError) {
     return {
@@ -118,18 +110,7 @@ export async function updateMateria(
     };
   }
 
-  if (horarios) {
-    try {
-      await saveHorariosByMateria(horarios, id);
-    } catch (err) {
-      return {
-        success: false,
-        message: err instanceof Error ? err.message : "Error al guardar los horarios.",
-      };
-    }
-  }
-
-  updateTag(`materias-${user.id}`);("/materias");
+  updateTag(`materias-${user.id}`);
 
   return {
     success: true,
@@ -139,7 +120,7 @@ export async function updateMateria(
 
 export async function deleteMateriaAction(materiaId: string): Promise<MateriaFormState> {
   console.log("Eliminando materia con id", materiaId);
-  
+
   const supabase = await createClient();
 
   const user = await requireUser(supabase);
@@ -156,14 +137,14 @@ export async function deleteMateriaAction(materiaId: string): Promise<MateriaFor
   if (error) {
     return {
       success: false,
-      message: `Error al eliminar materia: ${error.message}`
-    }
+      message: `Error al eliminar materia: ${error.message}`,
+    };
   }
 
-  updateTag("materias")
+  updateTag("materias");
 
   return {
     success: true,
-    message: "Materia eliminada correctamente."
-  }
+    message: "Materia eliminada correctamente.",
+  };
 }

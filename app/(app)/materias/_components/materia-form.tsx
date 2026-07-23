@@ -1,7 +1,7 @@
 "use client";
 
-import { Controller, useFormContext } from "react-hook-form";
-import { MateriaFormData } from "../schemas";
+import { Controller, useForm, useFormContext } from "react-hook-form";
+import { crearMateriaPorDefecto, MateriaFormData, materiaSchema } from "../schemas";
 import {
   Field,
   FieldDescription,
@@ -12,28 +12,59 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { COLORES_MATERIA } from "@/lib/types";
-import { MateriaFormState } from "../actions";
+import { COLORES_MATERIA, Materia } from "@/lib/types";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { HorarioFieldArray } from "../../horario/_components/horario-field-array";
 import { MateriaAlertForm } from "./materia-alert-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { startTransition, useActionState, useEffect } from "react";
+import { createMateriaAction, MateriaFormState, updateMateriaAction } from "../actions";
+import { toast } from "sonner";
 
-type Props = {
-  state: MateriaFormState;
-  pending: boolean;
+const initialState: MateriaFormState = { success: false, message: "" };
+
+type Props = ({ mode: "create"; materia?: undefined } | { mode: "edit"; materia: Materia }) & {
+  onPending: (pending: boolean) => void;
+  onSuccess: () => void;
 };
 
-export function MateriaForm({ state, pending }: Props) {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext<MateriaFormData>();
+export function MateriaForm({ mode, materia, onPending, onSuccess }: Props) {
+  const form = useForm<MateriaFormData>({
+    resolver: zodResolver(materiaSchema),
+    defaultValues: materia ?? crearMateriaPorDefecto(),
+  });
+
+  const { control } = form;
+
+  const action = mode === "edit" ? updateMateriaAction.bind(null, materia.id) : createMateriaAction;
+  const [state, dispatch, pending] = useActionState(action, initialState);
+
+  function onValid(data: MateriaFormData) {
+    startTransition(() => {
+      dispatch(data);
+    });
+  }
+
+  useEffect(() => {
+    if (state.success) {
+      toast.success(state.message);
+      onSuccess();
+      form.reset(mode === "create" ? crearMateriaPorDefecto() : materia);
+    }
+
+    if (!state.success && state.message) {
+      toast.error(state.message, { duration: 5000 });
+      console.error(state.message);
+    }
+  }, [state]);
+
+  useEffect(() => {
+    onPending(pending);
+  }, [pending, onPending]);
 
   const hasServerErrors = !!state.errors;
 
-
   return (
-    <div>
+    <form id="materia-form" onSubmit={form.handleSubmit(onValid)}>
       <FieldGroup>
         {/* Erros */}
         {hasServerErrors && <MateriaAlertForm errors={state.errors ?? {}} />}
@@ -112,9 +143,9 @@ export function MateriaForm({ state, pending }: Props) {
           )}
         ></Controller>
 
-        {/* Horario Section */}
-        <HorarioFieldArray />
+        {/* Horario Section
+        <HorarioFieldArray /> */}
       </FieldGroup>
-    </div>
+    </form>
   );
 }

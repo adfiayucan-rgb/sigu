@@ -1,5 +1,4 @@
 import z from "zod";
-import { horarioSchema } from "../horario/schema";
 
 export const materiaSchema = z.object({
   nombre: z
@@ -16,10 +15,15 @@ export const materiaSchema = z.object({
     .min(1, "Debe elegir un color"),
   semestre_id: z
     .string()
-    .min(1, "El semestre es requerido"),
-  horarios: z
-    .array(horarioSchema)
-    .optional(),
 });
 
 export type MateriaFormData = z.infer<typeof materiaSchema>;
+
+export function crearMateriaPorDefecto(): MateriaFormData {
+  return {
+    color_hex: "",
+    creditos: 1,
+    nombre: "",
+    semestre_id: ""
+  }
+}

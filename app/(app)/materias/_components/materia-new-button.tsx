@@ -3,15 +3,17 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { MateriaFormDialog } from "./materia-form-dialog";
+import { Plus } from "lucide-react";
 
-export function MateriaNewButton({ semestreId }: { semestreId: string }) {
+export function MateriaNewButton() {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Nueva materia</Button>
-      {/* //TODO: QUITAR EL SEMESTREID */}
-      <MateriaFormDialog mode="create" open={open} onOpenChange={setOpen} semestreId={semestreId} />
+      <Button className="cursor-pointer" onClick={() => setOpen(true)}>
+        <Plus data-icon="inline-start" /> Nueva materia
+      </Button>
+      <MateriaFormDialog mode="create" open={open} onOpenChange={setOpen} />
     </>
   );
 }
