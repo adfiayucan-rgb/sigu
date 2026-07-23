@@ -1,29 +1,28 @@
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function formatDateTime(dateString: string | undefined) {
   console.log(dateString);
-  
+
   if (!dateString) return "";
 
   const date = new Date(dateString);
-  
+
   // getTimezoneOffset() devuelve la diferencia en minutos (ej. 300 para Colombia)
   // Multiplicamos por 60000 para pasar de minutos a milisegundos
   const offset = date.getTimezoneOffset() * 60000;
-  
+
   // Creamos una nueva fecha ajustada restando el offset
   const localDate = new Date(date.getTime() - offset);
 
   // Ahora el .toISOString() devolverá tu hora local exacta
   // Ejemplo: "2026-03-01T07:00:00.000Z" -> Cortamos a "2026-03-01T07:00"
   return localDate.toISOString().slice(0, 16);
-};
-
+}
 
 /**
  * Convierte una hora en formato 24h (HH:mm) a 12h (hh:mm AM/PM)
@@ -34,10 +33,10 @@ export const formatearA12Horas = (hora24: string): string => {
   if (!hora24) return "Hora no definida";
 
   // Dividimos el string por los dos puntos
-  let [horas, minutos] = hora24.split(':').map(Number);
+  let [horas, minutos] = hora24.split(":").map(Number);
 
   // Determinamos si es AM o PM
-  const periodo = horas >= 12 ? 'p.m.' : 'a.m.';
+  const periodo = horas >= 12 ? "p.m." : "a.m.";
 
   // Convertimos la hora al formato 12
   // El residuo de horas % 12 nos da la hora en base 12
@@ -50,8 +49,19 @@ export const formatearA12Horas = (hora24: string): string => {
   return `${horas}:${minutosFormateados} ${periodo}`;
 };
 
-
 export const obtenerDiaDeLaSemana = (dia: number): string => {
-  const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
   return dias[dia];
 };
+
+export function hexToRgba(hex: string, alpha: number) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+export function formatDate() {
+  
+}

@@ -26,7 +26,6 @@ export type MateriaWithDetails = Materia & {
 
 export type Actividad = {
   id: string
-  user_id: string
   materia_id: string
   titulo: string
   tipo: 'Parcial 1' | 'Parcial 2' | 'Parcial 3' | 'Final' | 'Tarea' | 'Quiz'
@@ -34,11 +33,22 @@ export type Actividad = {
   completada: boolean
   nota: number | null
   porcentaje_manual: number | null
-  created_at: string
   descripcion: string
   es_examen: boolean
+  hora_inicio?: string
+  hora_fin?: string
+  lugar?: string
 }
 
+
+export type ActividadCardData = Actividad & {
+  materia_nombre: string
+  materia_color: string
+}
+
+export type ActividadDetail = Actividad & {
+  materia: Materia
+}
 
 
 export type ActividadResponse = Pick<ActividadConMateria, 'id' | 'materia_id' | 'titulo' | 'tipo' | 'fecha_entrega' | 'completada' | 'nota' | 'materia'>
@@ -62,6 +72,12 @@ export type HorarioConMateria = Horario & {
 
 export type MateriaConHorarios = Materia & {
   horarios: Horario[]
+}
+ 
+export type MateriaSelect = {
+  id: string,
+  nombre: string,
+  color_hex: string
 }
 
 export const DIAS_SEMANA = [
@@ -93,6 +109,18 @@ export const COLORES_MATERIA = [
   '#06b6d4',
   '#f97316',
 ] as const
+
+export const ACTIVIDAD_TYPES = [
+  "Parcial 1",
+  "Parcial 2",
+  "Parcial 3",
+  "Final",
+  "Tarea",
+  "Quiz",
+] as const
+
+export type ActividadType =
+  (typeof ACTIVIDAD_TYPES)[number]
 
 // Tipos para el módulo de conocimiento
 export type Apunte = {
@@ -137,6 +165,11 @@ export const TIPOS_ARCHIVO = [
   { value: 1, label: 'Imagen', icon: 'image' },
   { value: 2, label: 'Otro', icon: 'file' },
 ] as const
+
+export interface FiltrosState {
+  busqueda: string;
+  materias: string[];
+}
 
 // Límites para capa gratuita
 export const LIMITE_ARCHIVO_MB = 5

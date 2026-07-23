@@ -1,150 +1,205 @@
 "use server";
 
-import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { updateTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { createActividad, deleteActividad, updateActividad } from "@/services/actividades";
+import { ActividadFormData, actividadSchema } from "@/app/(app)/calendario/schemas";
+import { requireUser } from "@/lib/supabase/auth";
+import { createActividad, deleteActividad, updateActividad } from "@/lib/actividades/mutations";
 
-const ActividadSchema = z.object({
-  descripcion: z.string(),
-  titulo: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-  tipo: z.string().min(1, "El tipo de tarea es requerido"),
-  fecha_entrega: z.string().min(1, "La fecha de entrega es requerida"),
-  materia_id: z.string().min(1, "El ID de la materia es requerido"),
-  id: z.string(),
-  nota: z.string().optional(),
-});
-
-export type FormState = {
-  success?: boolean;
-  errors?: { [key: string]: string[] };
-  message?: string | null;
-  data?: any;
-  fields?: {
-    // Guardamos los valores "sucios" del formulario aquí
-    descripcion?: string;
-    titulo?: string;
-    tipo?: string;
-    fecha_entrega?: string;
-    materia_id?: string;
-    id?: string;
-  };
+export type ActividadFormState = {
+  success: boolean;
+  message: string;
+  fieldErrors?: Record<string, string[]>;
 };
 
-export async function saveActividad(prevState: FormState, formData: FormData): Promise<FormState> {
-  const rawData = Object.fromEntries(formData.entries());
-  const validatedFields = ActividadSchema.safeParse(rawData);
+export async function createActividadAction(
+  _prevState: ActividadFormState,
+  formData: ActividadFormData,
+): Promise<ActividadFormState> {
+  const parsed = actividadSchema.safeParse(formData);
 
-  console.log(formData);
-
-  if (!validatedFields.success) {
+  if (!parsed.success) {
     return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: "Error de validación. Revisa los campos.",
-      fields: rawData as any,
-      data: null,
+      success: false,
+      message: "Datos inválidos.",
+      fieldErrors: parsed.error.flatten().fieldErrors,
     };
   }
 
-  const { id, nota, ...data } = validatedFields.data;
   const supabase = await createClient();
+
+  const user = await requireUser(supabase);
+
+  if (!user) {
+    return {
+      success: false,
+      message: "Usuario no autenticado",
+    };
+  }
+
+  const { data: actividadCreada, error: actividadError } = await createActividad(parsed.data, supabase, user.id);
+
+  if (actividadError || !actividadCreada) {
+    return {
+      success: false,
+      message: `Error al crear la actividad en la DB: ${actividadError.message}`,
+    };
+  }
+
+  updateTag(`actividades-${user.id}`);
+
+  return {
+    success: true,
+    message: "Actividad creada exitosamente.",
+  };
+}
+
+export async function updateActividadAction(
+  id: string,
+  _prevState: ActividadFormState,
+  formData: ActividadFormData,
+): Promise<ActividadFormState> {
+  const parsed = actividadSchema.safeParse(formData);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: "Datos inválidos.",
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  const supabase = await createClient();
+
+  const user = await requireUser(supabase);
+
+  if (!user) {
+    return {
+      success: false,
+      message: "Usuario no autenticado",
+    };
+  }
+
+  const { error: actividadError } = await updateActividad(id, parsed.data, user.id, supabase);
+
+  if (actividadError) {
+    return {
+      success: false,
+      message: `Error al actualizar la actividad en DB: ${actividadError.message}`,
+    };
+  }
+
+  updateTag(`actividades-${user.id}`);
+
+  return {
+    success: true,
+    message: "Actividad actualizada correctamente.",
+  };
+}
+
+export async function deleteActividadAction(id: string): Promise<ActividadFormState> {
+  console.log("Eliminando actividad con id: ", id);
+  const supabase = await createClient();
+
+  const user = await requireUser(supabase);
+
+  if (!user) {
+    return {
+      success: false,
+      message: "Usuario no autenticado",
+    };
+  }
+
+  const { error } = await deleteActividad(id, supabase, user.id);
+
+  if (error) {
+    return {
+      success: false,
+      message: `Error al eliminar la actividad en la DB: ${error.message}`,
+    };
+  }
+
+  updateTag(`actividades-${user.id}`);
+
+  return {
+    success: true,
+    message: "Actividad eliminada exitosamente.",
+  };
+}
+
+export async function toggleActividadCompletada(id: string, completada: boolean): Promise<ActividadFormState> {
+  const supabase = await createClient();
+
+  console.log("Actualizando estado");
+
+  const user = await requireUser(supabase);
+
+  if (!user) {
+    return {
+      success: false,
+      message: "Usuario no autenticado",
+    };
+  }
+
+  const { error: updateError } = await supabase
+    .from("actividades")
+    .update({
+      completada,
+    })
+    .eq("id", id);
+
+  if (updateError) {
+    return {
+      success: false,
+      message: `Error al actualizar el estado de completado en la DB: ${updateError.message}`,
+    };
+  }
+
+  // updateTag("actividades");
+  updateTag(`actividades-${user.id}`);
+
+  console.log("se actualizó el estado con exito");
+
+  return {
+    success: true,
+    message: "Se actualizó correctamente el estado",
+  };
+}
+
+export async function updateActividadFechaAction(
+  id: string,
+  data: {
+    fecha_entrega?: string;
+    hora_inicio?: string;
+    hora_fin?: string;
+  },
+): Promise<ActividadFormState> {
+  const supabase = await createClient();
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return { message: "No autorizado", errors: { server: ["Sesión expirada"] } };
-
-  const dataParaGuardar = {
-    ...data,
-    fecha_entrega: `${data.fecha_entrega}:00-05:00`, // Hacemos que el campo de fecha entrega sea en Colombia
-    user_id: user.id,
-    nota: nota && nota.trim() !== '' ? parseFloat(nota) : null,
-  };
-
-  try {
-    if (id) {
-      console.log("actualizando la actividad en la base de datos", dataParaGuardar);
-      const { data: actividad, error } = await updateActividad(id, dataParaGuardar, user.id);
-
-      if (error) throw error; // Si Supabase falla, lanzamos el error
-      console.log("Actividad actualizada exitosamente", actividad);
-      return { message: "Actualizado con éxito", data: actividad };
-    } else {
-      // Lógica de CREATE (prisma.materia.create...)
-      console.log("Creando la actividad en la base de datos", dataParaGuardar);
-      const { data: actividad, error } = await createActividad(dataParaGuardar, user.id);
-      console.log("Response de la db", actividad);
-
-      if (error) throw error; // Si Supabase falla, lanzamos el error
-      console.log("Creado con exito", actividad);
-      return { message: "Creado con éxito", data: actividad };
-    }
-  } catch (e: any) {
-    console.error("Error al crear la actividad", e);
-
-    return {
-      message: "Error al crear la actividad",
-      errors: { server: [e.message] },
-      fields: rawData as any,
-    };
-  }
-}
-
-export async function toggleActividad(id: string, nuevoEstado: boolean) {
-  try {
-    const supabase = await createClient();
-
-    console.log(`Actualizando estado de actividad ${id} a ${nuevoEstado}`);
-
-    const { error } = await supabase
-      .from("actividades")
-      .update({ completada: nuevoEstado }) // Usamos el valor que viene del cliente
-      .eq("id", id);
-
-    if (error) throw error; // Si Supabase falla, lanzamos el error
-    console.log("Actividad actualizada exitosamente");
-
-    revalidatePath("/calendario");
-  } catch (error) {
-    console.error("Error en toggleActividad:", error);
-    throw error; // Re-lanzamos para que useOptimistic haga el rollback
-  }
-}
-
-export async function deleteActividadAction(id: string): Promise<FormState> {
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return {
-        success: false,
-        message: "No autorizado",
-        errors: { server: ["Sesión expirada"] },
-      };
-    }
-
-    const { error } = await deleteActividad(id, user.id);
-
-    if (error) throw error;
-
-    console.log("Actividad eliminada exitosamente");
-
-    // Retornamos el ID para que el mutate sepa qué quitar del caché
-    return {
-      success: true,
-      data: id,
-    };
-  } catch (error: any) {
-    console.error("Error en deleteActividad:", error);
-    // Es mejor retornar un objeto de error que lanzar un throw crudo
-    // para que el cliente pueda manejarlo sin romper el flujo de ejecución
+  if (!user) {
     return {
       success: false,
-      message: "Error al eliminar la actividad",
-      errors: { server: [error.message] },
+      message: "Usuario no autenticado",
     };
   }
+
+  const { error } = await supabase.from("actividades").update(data).eq("id", id);
+
+  if (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+
+  updateTag(`actividades-${user.id}`);
+
+  return {
+    success: true,
+    message: "Actividad actualizada correctamente.",
+  };
 }
