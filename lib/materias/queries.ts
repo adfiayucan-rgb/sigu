@@ -1,5 +1,6 @@
 "use server";
 
+import { cacheLife, cacheTag } from "next/cache";
 import { createClient } from "../supabase/server";
 import { MateriaWithDetails } from "../types";
 
@@ -42,10 +43,39 @@ export async function getMateriasConDetalles() {
     `,
     )
     .eq("semestres.es_actual", true)
-    .eq("actividades.es_examen", true)
-    // .gte("actividades.fecha_entrega", hoy);
+    .eq("actividades.es_examen", true);
+  // .gte("actividades.fecha_entrega", hoy);
 
   if (error) throw error;
 
   return data as unknown as MateriaWithDetails[];
+}
+
+export async function getMateriasParaSelect() {
+  "use cache: private"
+
+  cacheLife("hours")
+  cacheTag("materias")
+
+  
+  const supabase = await createClient();
+
+  console.log("➡️ Antes de consultar Supabase en materias");
+  const { data, error } = await supabase
+    .from("materias")
+    .select(
+      `
+        id,
+        nombre,
+        color_hex,
+        semestres!inner()
+      `,
+    )
+    .eq("semestres.es_actual", true)
+    .order("nombre");
+
+  if (error) throw error;
+  console.log("✅ Supabase respondió en materias");
+
+  return data;
 }

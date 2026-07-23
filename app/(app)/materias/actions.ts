@@ -1,7 +1,7 @@
 "use server";
 import { createClient } from "@/lib/supabase/server";
 import { MateriaFormData, materiaSchema } from "./schemas";
-import { revalidatePath } from "next/cache";
+import { updateTag } from "next/cache";
 import { saveHorariosByMateria } from "@/lib/horario/mutations";
 import { requireUser } from "@/lib/supabase/auth";
 import { deleteMateria } from "@/lib/materias/mutations";
@@ -67,7 +67,7 @@ export async function createMateria(
     }
   }
 
-  revalidatePath("/materias");
+  updateTag(`materias-${user.id}`);
 
   return {
     success: true,
@@ -129,7 +129,7 @@ export async function updateMateria(
     }
   }
 
-  revalidatePath("/materias");
+  updateTag(`materias-${user.id}`);("/materias");
 
   return {
     success: true,
@@ -160,7 +160,7 @@ export async function deleteMateriaAction(materiaId: string): Promise<MateriaFor
     }
   }
 
-  revalidatePath("/materias")
+  updateTag("materias")
 
   return {
     success: true,
