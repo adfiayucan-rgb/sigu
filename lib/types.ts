@@ -67,7 +67,7 @@ export type Horario = {
 }
 
 export type HorarioConMateria = Horario & {
-  materia: Pick<Materia, 'nombre' | 'color_hex'>
+  materia: Pick<Materia, 'id' | 'nombre' | 'color_hex'>
 }
 
 export type MateriaConHorarios = Materia & {
@@ -174,3 +174,4 @@ export interface FiltrosState {
 // Límites para capa gratuita
 export const LIMITE_ARCHIVO_MB = 5
 export const LIMITE_ARCHIVO_BYTES = LIMITE_ARCHIVO_MB * 1024 * 1024
+

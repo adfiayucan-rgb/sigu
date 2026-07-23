@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { getActividades } from '@/services/actividades'
 import { AuthError } from '@supabase/supabase-js';
+import { revalidateTag } from 'next/cache';
 import { NextResponse } from 'next/server'
 
 export async function GET() {
@@ -31,6 +32,8 @@ export async function POST(request: Request) {
     materia: data.materias ? { nombre: data.materias.nombre, color_hex: data.materias.color_hex } : null,
     materias: undefined,
   }
+
+  revalidateTag(`actividades-${user.id}`, "max")
 
   return NextResponse.json(mapped)
 }
