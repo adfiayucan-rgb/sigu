@@ -98,7 +98,6 @@ export async function updateActividadAction(
 }
 
 export async function deleteActividadAction(id: string): Promise<ActividadFormState> {
-  console.log("Eliminando actividad con id: ", id);
   const supabase = await createClient();
 
   const user = await requireUser(supabase);
@@ -130,8 +129,6 @@ export async function deleteActividadAction(id: string): Promise<ActividadFormSt
 export async function toggleActividadCompletada(id: string, completada: boolean): Promise<ActividadFormState> {
   const supabase = await createClient();
 
-  console.log("Actualizando estado");
-
   const user = await requireUser(supabase);
 
   if (!user) {
@@ -157,8 +154,6 @@ export async function toggleActividadCompletada(id: string, completada: boolean)
 
   // updateTag("actividades");
   updateTag(`actividades-${user.id}`);
-
-  console.log("se actualizó el estado con exito");
 
   return {
     success: true,

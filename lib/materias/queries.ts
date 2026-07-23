@@ -52,15 +52,13 @@ export async function getMateriasConDetalles() {
 }
 
 export async function getMateriasParaSelect() {
-  "use cache: private"
+  "use cache: private";
 
-  cacheLife("hours")
-  cacheTag("materias")
+  cacheLife("hours");
+  cacheTag("materias");
 
-  
   const supabase = await createClient();
 
-  console.log("➡️ Antes de consultar Supabase en materias");
   const { data, error } = await supabase
     .from("materias")
     .select(
@@ -75,7 +73,6 @@ export async function getMateriasParaSelect() {
     .order("nombre");
 
   if (error) throw error;
-  console.log("✅ Supabase respondió en materias");
 
   return data;
 }
