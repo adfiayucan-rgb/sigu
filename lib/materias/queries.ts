@@ -2,7 +2,7 @@
 
 import { cacheLife, cacheTag } from "next/cache";
 import { createClient } from "../supabase/server";
-import { MateriaWithDetails } from "../types";
+import { Materia, MateriaWithDetails } from "../types";
 
 export async function getMateriasConDetalles() {
   const supabase = await createClient();
@@ -49,6 +49,35 @@ export async function getMateriasConDetalles() {
   if (error) throw error;
 
   return data as unknown as MateriaWithDetails[];
+}
+
+export async function getMaterias() {
+  "use cache: private";
+
+  cacheLife("hours");
+  cacheTag("materias");
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("materias")
+    .select(
+      `
+        id,
+        nombre,
+        color_hex,
+        creditos,
+        semestre_id,
+        profesor,
+        semestre:semestres!inner()
+      `,
+    )
+    .eq("semestre.es_actual", true)
+    .order("nombre");
+
+  if (error) throw error;
+
+  return data as unknown as Materia[];
 }
 
 export async function getMateriasParaSelect() {

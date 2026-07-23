@@ -46,3 +46,10 @@ export const HOURS = Array.from(
   { length: DAY_END_HOUR - DAY_START_HOUR },
   (_, i) => DAY_START_HOUR + i,
 );
+
+export const HORAS = Array.from({ length: 15 }, (_, i) => i + 6); // 6am to 8pm
+
+export function timeToMinutes(time: string): number {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+}

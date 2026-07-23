@@ -1,15 +1,27 @@
+import { cacheLife, cacheTag } from "next/cache";
+import { requireUser } from "../supabase/auth";
 import { createClient } from "../supabase/server";
 
 export async function getSemestreActual() {
-    const supabase = await createClient();
+  "use cache: private";
 
-    const { data, error } = await supabase
-        .from("semestres")
-        .select("id, nombre")
-        .eq("es_actual", true)
-        .single();
+  const supabase = await createClient();
 
-    if (error) throw error;
+  const user = await requireUser(supabase);
 
-    return data;
+  if (!user) {
+    return {
+      id: null,
+      nombre: null,
+    };
+  }
+
+  cacheTag(`semestres-${user.id}`)
+  cacheLife("hours")
+
+  const { data, error } = await supabase.from("semestres").select("id, nombre").eq("es_actual", true).single();
+
+  if (error) throw error;
+
+  return data;
 }
