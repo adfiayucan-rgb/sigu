@@ -38,8 +38,6 @@ export async function DashboardView({ actividades, materias }: Props) {
 }
 
 async function ClaseActual() {
-  const { claseActual } = await getClaseActual();
-  console.log(claseActual);
-  
+  const claseActual = await getClaseActual();
   return <QuickTaskWidget claseActual={claseActual} />;
 }
