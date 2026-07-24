@@ -1,7 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { HorarioConMateria } from "@/lib/types";
+"use client"
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Horario, HorarioConMateria } from "@/lib/types";
 import { HORAS } from "@/lib/utils-time";
 import { HorarioChip } from "./horario-chip";
+import { HorarioNewButton } from "./horario-new-button";
+import { useState } from "react";
+import { HorarioFormDialog } from "./horario-form-dialog";
 
 const DIAS = [
   { value: 1, label: "Lunes", short: "Lun" },
@@ -17,6 +21,9 @@ type Props = {
 };
 
 export function HorarioGrid({ horarios }: Props) {
+  const [selectedHorario, setSelectedHorario] = useState<Horario | null>(null)
+  const [openEdit, setOpenEdit] = useState(false);
+
   const today = new Date().getDay();
 
   const horariosPorDia = () => {
@@ -33,10 +40,19 @@ export function HorarioGrid({ horarios }: Props) {
     return grouped;
   };
 
+  const handleEdit = (horario: Horario) => {
+    setSelectedHorario(horario);
+    setOpenEdit(true)
+  }
+
   return (
+    <>
     <Card className="overflow-hidden">
       <CardHeader className="pb-0">
         <CardTitle className="text-base font-medium">Vista Semanal</CardTitle>
+        <CardAction>
+          <HorarioNewButton />
+        </CardAction>
       </CardHeader>
       <CardContent className="p-4">
         <div className="overflow-x-auto">
@@ -77,7 +93,7 @@ export function HorarioGrid({ horarios }: Props) {
                   ))}
                   {/* Horarios */}
                   {horariosPorDia()[dia.value].map((h) => (
-                    <HorarioChip key={h.id} horario={h}/>
+                    <HorarioChip key={h.id} horario={h} onEdit={handleEdit}/>
                   ))}
                 </div>
               ))}
@@ -86,5 +102,8 @@ export function HorarioGrid({ horarios }: Props) {
         </div>
       </CardContent>
     </Card>
+
+    <HorarioFormDialog open={openEdit} onOpenChange={setOpenEdit} horario={selectedHorario}/>
+    </>
   );
 }

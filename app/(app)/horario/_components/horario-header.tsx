@@ -8,7 +8,7 @@ export async function HorarioHeader() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-balance">Horario de Clases</h1>
         <Suspense fallback={<Skeleton className="mt-1 h-5 w-40" />}>
-            <SemestreActual />
+          <SemestreActual />
         </Suspense>
       </div>
     </div>

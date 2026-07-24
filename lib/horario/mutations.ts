@@ -20,7 +20,6 @@ export async function saveHorariosByMateria(horarios: HorarioFormData[], materia
   );
   console.log("idsExistentes: ", idsExistentes);
   console.log("idsEnPayload: ", idsEnPayload);
-  
 
   const aCrear = horarios.filter((h) => !h.id);
   const aActualizar = horarios.filter((h) => h.id && idsExistentes.has(h.id));
@@ -28,11 +27,10 @@ export async function saveHorariosByMateria(horarios: HorarioFormData[], materia
   console.log("aCrear: ", aCrear);
   console.log("aActualizar: ", aActualizar);
   console.log("aEliminar: ", aEliminar);
-  
 
   if (aCrear.length > 0) {
     console.log("Creando horarios");
-    
+
     const { error } = await supabase
       .from("horarios")
       .insert(aCrear.map(({ id: _id, ...resto }) => ({ ...resto, materia_id: materiaId })));
@@ -42,7 +40,7 @@ export async function saveHorariosByMateria(horarios: HorarioFormData[], materia
 
   for (const horario of aActualizar) {
     console.log("Actualizando horario: ", horario);
-    
+
     const { id, ...resto } = horario;
     const { error } = await supabase.from("horarios").update(resto).eq("id", id).eq("materia_id", materiaId);
     if (error) throw new Error(`Error al actualizar horario con ID: ${id} por la siguiente razón: ${error.message}`);
@@ -50,53 +48,37 @@ export async function saveHorariosByMateria(horarios: HorarioFormData[], materia
 
   if (aEliminar.length > 0) {
     console.log("Eliminando horarios");
-    
+
     const { error } = await supabase.from("horarios").delete().in("id", aEliminar);
     if (error) throw new Error(`Error al eliminar los horarios: ${error.message}`);
   }
 }
 
-export async function createHorario(horarioAGuardar: Horario, userId: string) {
+export async function createHorario(horarioAGuardar: HorarioFormData) {
   const supabase = await createClient();
 
-  const { data: horarioCreado, error } = await supabase
-    .from("horarios")
-    .insert({
-      ...horarioAGuardar,
-      user_id: userId,
-    })
-    .select("*")
-    .single();
+  const { data: horarioCreado, error } = await supabase.from("horarios").insert(horarioAGuardar).select("*").single();
 
   return { horarioCreado, error };
 }
 
-export async function updateHorario(horarioId: string, horarioAActualizar: HorarioFormData, userId: string) {
+export async function updateHorario(horarioId: string, horarioAActualizar: HorarioFormData) {
   const supabase = await createClient();
 
   const { data: horarioCreado, error } = await supabase
     .from("horarios")
-    .update({
-      ...horarioAActualizar,
-      user_id: userId,
-    })
+    .update(horarioAActualizar)
     .eq("id", horarioId)
-    .eq("materia_id", horarioAActualizar.materia_id)
     .select("*")
     .single();
 
   return { horarioCreado, error };
 }
 
-export async function createHorarios(
-  horarios: HorarioFormData
-) {
+export async function createHorarios(horarios: HorarioFormData) {
   const supabase = await createClient();
 
-  const { error } = await supabase
-    .from("horarios")
-    .insert(horarios);
+  const { error } = await supabase.from("horarios").insert(horarios);
 
   return { error };
 }
-

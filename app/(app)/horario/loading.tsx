@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export function HorarioSkeleton() {
+export default function HorarioLoadingPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-end gap-3">

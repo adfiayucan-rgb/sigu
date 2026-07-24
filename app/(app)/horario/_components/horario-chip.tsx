@@ -1,11 +1,12 @@
-import { HorarioConMateria } from "@/lib/types";
+import { Horario, HorarioConMateria } from "@/lib/types";
 import { timeToMinutes } from "@/lib/utils-time";
 import { Clock, MapPin } from "lucide-react";
 
 type Props = {
   horario: HorarioConMateria;
+  onEdit: (horario: Horario) => void;
 };
-export function HorarioChip({ horario }: Props) {
+export function HorarioChip({ horario, onEdit }: Props) {
   const startMinutes = timeToMinutes(horario.hora_inicio);
   const endMinutes = timeToMinutes(horario.hora_fin);
   const durationMinutes = endMinutes - startMinutes;
@@ -25,6 +26,7 @@ export function HorarioChip({ horario }: Props) {
         backgroundColor: horario.materia.color_hex || "#3b82f6",
         minHeight: "48px",
       }}
+      onClick={() => onEdit(horario)}
     >
       <div className="flex flex-col h-full text-white">
         <span className="font-semibold text-xs leading-tight truncate">{horario.materia?.nombre}</span>

@@ -1,22 +1,13 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { Suspense } from "react";
 import { getHorariosConMateria } from "@/lib/horario/queries";
-import { HorarioView } from "./_components/horario-view";
-import { HorarioSkeleton } from "./_components/horario-skeleton";
+import { HorarioStats } from "./_components/horario-stats";
+import { HorarioGrid } from "./_components/horario-grid";
 
-export default function HorarioPage() {
-  return (
-    <>
-      <Suspense fallback={<HorarioSkeleton />}>
-        <Horarios />
-      </Suspense>
-    </>
-  );
-}
-
-async function Horarios() {
+export default async function HorarioPage() {
   const horarios = await getHorariosConMateria();
-  console.log(horarios);
-
-  return <HorarioView horarios={horarios} />;
+  return (
+    <div className="flex flex-col gap-6">
+      <HorarioStats horarios={horarios} />
+      <HorarioGrid horarios={horarios} />
+    </div>
+  );
 }

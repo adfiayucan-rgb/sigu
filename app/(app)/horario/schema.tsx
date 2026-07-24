@@ -14,3 +14,12 @@ export const horarioSchema = z.object({
 });
 
 export type HorarioFormData = z.infer<typeof horarioSchema>;
+
+export function crearHorarioPorDefecto(): HorarioFormData {
+  return {
+    dia: 1, //Lunes
+    hora_fin: "",
+    hora_inicio: "",
+    materia_id: "",
+  };
+}
