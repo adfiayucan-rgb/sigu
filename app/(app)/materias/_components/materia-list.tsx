@@ -44,7 +44,6 @@ export function MateriaList({ materias }: Props) {
             materia={selectedMateria}
             open={editOpen}
             onOpenChange={setEditOpen}
-            semestreId={selectedMateria.semestre_id}
           />
         </>
       )}

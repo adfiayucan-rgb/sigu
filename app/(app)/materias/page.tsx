@@ -6,9 +6,9 @@ export default async function MateriasPage() {
   const materias = await getMateriasConDetalles();
 
   return (
-    <div className="flex flex-col gap-6">
-      <MateriaStats materias={materias} />
+    <>
+      <MateriaStats />
       <MateriaList materias={materias} />
-    </div>
+    </>
   );
 }

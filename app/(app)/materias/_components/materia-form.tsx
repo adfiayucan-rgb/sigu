@@ -143,8 +143,6 @@ export function MateriaForm({ mode, materia, onPending, onSuccess }: Props) {
           )}
         ></Controller>
 
-        {/* Horario Section
-        <HorarioFieldArray /> */}
       </FieldGroup>
     </form>
   );

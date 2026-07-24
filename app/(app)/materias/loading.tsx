@@ -13,7 +13,7 @@ export default function MateriasLoadingPage() {
               <BookOpen className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <Skeleton className="h-8 w-18.25" />
+              <Skeleton className="h-7 w-6" />
               <p className="text-xs text-muted-foreground">Materias</p>
             </div>
           </CardContent>
@@ -24,7 +24,7 @@ export default function MateriasLoadingPage() {
               <GraduationCap className="h-5 w-5 text-chart-2" />
             </div>
             <div>
-              <Skeleton className="h-8 w-18.25" />
+              <Skeleton className="h-7 w-6" />
               <p className="text-xs text-muted-foreground">Créditos</p>
             </div>
           </CardContent>
@@ -35,7 +35,7 @@ export default function MateriasLoadingPage() {
               <TrendingUp className="h-5 w-5 text-chart-1" />
             </div>
             <div>
-              <Skeleton className="h-8 w-18.25" />
+              <Skeleton className="h-7 w-6" />
               <p className="text-xs text-muted-foreground">Completadas</p>
             </div>
           </CardContent>
@@ -46,13 +46,13 @@ export default function MateriasLoadingPage() {
               <BookOpen className="h-5 w-5 text-chart-4" />
             </div>
             <div>
-              <Skeleton className="h-8 w-18.25" />
+              <Skeleton className="h-7 w-6" />
               <p className="text-xs text-muted-foreground">Pendientes</p>
             </div>
           </CardContent>
         </Card>
       </div>
-      
+
       <div className="grid gap-4 md:grid-cols-2">
         <Skeleton className="h-64 rounded-xl" />
         <Skeleton className="h-64 rounded-xl" />

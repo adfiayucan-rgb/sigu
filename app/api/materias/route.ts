@@ -1,41 +1,37 @@
-import { createClient } from '@/lib/supabase/server'
-import { NextResponse } from 'next/server'
+import { getMateriasParaSelect } from "@/lib/materias/queries";
+import { createClient } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const semestreId = searchParams.get('semestreId')
+  const { searchParams } = new URL(request.url);
+  const semestreId = searchParams.get("semestreId");
 
-  const supabase = await createClient()
+  const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  let query = supabase
-    .from('materias')
-    .select('id, nombre, creditos, color_hex, semestre_id' )
+  const materias = await getMateriasParaSelect();
 
-  if (semestreId) {
-    query = query.eq('semestre_id', semestreId)
-  }
-  
-  const { data, error } = await query.order('nombre')
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data)
+  return NextResponse.json(materias);
 }
 
 export async function POST(request: Request) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json()
+  const body = await request.json();
   const { data, error } = await supabase
-    .from('materias')
+    .from("materias")
     .insert({ ...body, user_id: user.id })
     .select()
-    .single()
+    .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json(data);
 }
