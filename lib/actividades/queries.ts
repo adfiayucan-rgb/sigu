@@ -57,7 +57,7 @@ export async function getActividadById(id: string) {
     `,
     )
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
 

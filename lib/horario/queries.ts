@@ -184,7 +184,7 @@ export async function getClaseActual(): Promise<HorarioConMateria | null> {
     .eq("dia", day)
     .lte("hora_inicio", time)
     .gte("hora_fin", time)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error(error.message);
