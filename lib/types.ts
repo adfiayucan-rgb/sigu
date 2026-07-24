@@ -171,6 +171,12 @@ export interface FiltrosState {
   materias: string[];
 }
 
+export type ActionState = {
+  success: boolean;
+  message: string;
+  errors?: Record<string, string[]>;
+};
+
 // Límites para capa gratuita
 export const LIMITE_ARCHIVO_MB = 5
 export const LIMITE_ARCHIVO_BYTES = LIMITE_ARCHIVO_MB * 1024 * 1024
