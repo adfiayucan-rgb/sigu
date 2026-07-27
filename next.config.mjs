@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ["pdf-parse"],
   cacheComponents: true,
   typescript: {
     ignoreBuildErrors: true,

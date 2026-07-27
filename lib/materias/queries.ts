@@ -150,3 +150,25 @@ export async function getMateriasStats(): Promise<MateriasStats> {
 }
 */
 }
+
+export async function getMateriasByNombres(nombres: string[]) {
+  "use cache: private"
+
+  
+  const supabase = await createClient()
+  
+  const user = await requireUser(supabase);
+  if (!user) {
+    return null;
+  }
+
+  cacheLife("hours")
+  cacheTag(`materias-${user.id}`)
+
+  const { data } = await supabase
+    .from("materias")
+    .select("id, nombre, color_hex")
+    .in("nombre", nombres)
+
+  return data ?? null
+}

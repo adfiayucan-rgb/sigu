@@ -1,5 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
+
 import { twMerge } from "tailwind-merge";
+import z from "zod";
+
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -62,6 +65,54 @@ export function hexToRgba(hex: string, alpha: number) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-export function formatDate() {
-  
-}
+/**
+ * Extrae y formatea los problemas de validación de Zod en un objeto Record.
+ * Ideal para manejar errores de arrays donde el path incluye el índice (ej: "0.campo").
+ *
+ * @param issues - El array de problemas generado por parsed.error.issues
+ * @returns Un objeto donde la clave es el path del error y el valor es un array de mensajes
+ */
+export const extractZodArrayErrors = (issues: z.ZodIssue[]): Record<string, string[]> => {
+  const errors: Record<string, string[]> = {};
+
+  for (const issue of issues) {
+    // Une el arreglo del path para crear una clave de texto (ej. "0.email" o "1.password")
+    const key = issue.path.join(".");
+
+    // Si la clave aún no existe en el objeto, la inicializamos con un array vacío
+    if (!errors[key]) {
+      errors[key] = [];
+    }
+
+    // Agregamos el mensaje de error al array correspondiente
+    errors[key].push(issue.message);
+  }
+
+  return errors;
+};
+
+/**
+ * Convierte el Record de errores de Zod en un array de strings legible,
+ * indicando el número de fila (índice + 1) y el campo con problema.
+ */
+export const formatZodArrayErrorsToItems = (
+  errors: Record<string, string[]>
+): string[] => {
+  const items: string[] = [];
+
+  for (const [path, messages] of Object.entries(errors)) {
+    const [index, ...fieldParts] = path.split(".");
+    const rowNumber = Number(index) + 1;
+    const field = fieldParts.join(".");
+
+    for (const message of messages) {
+      items.push(
+        field
+          ? `Fila ${rowNumber} (${field}): ${message}`
+          : `Fila ${rowNumber}: ${message}`
+      );
+    }
+  }
+
+  return items;
+};

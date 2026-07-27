@@ -1,183 +1,172 @@
 export type Semestre = {
-  id: string
-  user_id: string
-  nombre: string
-  fecha_inicio: string
-  fecha_fin: string
-  es_actual: boolean
-  created_at: string
-}
+  id: string;
+  user_id: string;
+  nombre: string;
+  fecha_inicio: string;
+  fecha_fin: string;
+  es_actual: boolean;
+  created_at: string;
+};
 
 export type Materia = {
-  id: string
-  user_id: string
-  semestre_id: string
-  nombre: string
-  creditos: number
-  color_hex: string
-  created_at: string,
-  profesor: string
-}
+  id: string;
+  semestre_id: string;
+  nombre: string;
+  creditos: number;
+  color_hex: string;
+};
 
 export type MateriaWithDetails = Materia & {
-  horarios: Horario[]
-  actividades: Actividad[]
-}
+  horarios: Horario[];
+  actividades: Actividad[];
+};
 
 export type Actividad = {
-  id: string
-  materia_id: string
-  titulo: string
-  tipo: 'Parcial 1' | 'Parcial 2' | 'Parcial 3' | 'Final' | 'Tarea' | 'Quiz'
-  fecha_entrega: string
-  completada: boolean
-  nota: number | null
-  porcentaje_manual: number | null
-  descripcion: string
-  es_examen: boolean
-  hora_inicio?: string
-  hora_fin?: string
-  lugar?: string
-}
-
+  id: string;
+  materia_id: string;
+  titulo: string;
+  tipo: "Parcial 1" | "Parcial 2" | "Parcial 3" | "Final" | "Tarea" | "Quiz";
+  fecha_entrega: string;
+  completada: boolean;
+  nota: number | null;
+  porcentaje_manual: number | null;
+  descripcion: string;
+  es_examen: boolean;
+  hora_inicio?: string;
+  hora_fin?: string;
+  lugar?: string;
+};
 
 export type ActividadCardData = Actividad & {
-  materia_nombre: string
-  materia_color: string
-}
+  materia_nombre: string;
+  materia_color: string;
+};
 
 export type ActividadDetail = Actividad & {
-  materia: Materia
-}
+  materia: Materia;
+};
 
-
-export type ActividadResponse = Pick<ActividadConMateria, 'id' | 'materia_id' | 'titulo' | 'tipo' | 'fecha_entrega' | 'completada' | 'nota' | 'materia'>
+export type ActividadResponse = Pick<
+  ActividadConMateria,
+  "id" | "materia_id" | "titulo" | "tipo" | "fecha_entrega" | "completada" | "nota" | "materia"
+>;
 
 export type ActividadConMateria = Actividad & {
-  materia: Pick<Materia, 'nombre' | 'color_hex'>
-}
+  materia: Pick<Materia, "nombre" | "color_hex">;
+};
 
 export type Horario = {
-  id: string
-  materia_id: string
-  dia: number // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
-  hora_inicio: string // "HH:mm:ss"
-  hora_fin: string // "HH:mm:ss"
-  salon?: string
-}
+  id: string;
+  materia_id: string;
+  dia: number; // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+  hora_inicio: string; // "HH:mm:ss"
+  hora_fin: string; // "HH:mm:ss"
+  salon?: string;
+};
 
 export type HorarioConMateria = Horario & {
-  materia: Pick<Materia, 'id' | 'nombre' | 'color_hex'>
-}
+  materia: Pick<Materia, "id" | "nombre" | "color_hex">;
+};
 
 export type MateriaConHorarios = Materia & {
-  horarios: Horario[]
-}
- 
+  horarios: Horario[];
+};
+
 export type MateriaSelect = {
-  id: string,
-  nombre: string,
-  color_hex: string
-}
+  id: string;
+  nombre: string;
+  color_hex: string;
+};
 
 export const DIAS_SEMANA = [
-  { value: 1, label: 'Lunes' },
-  { value: 2, label: 'Martes' },
-  { value: 3, label: 'Miércoles' },
-  { value: 4, label: 'Jueves' },
-  { value: 5, label: 'Viernes' },
-  { value: 6, label: 'Sábado' },
-  { value: 0, label: 'Domingo' },
-] as const
+  { value: 1, label: "Lunes" },
+  { value: 2, label: "Martes" },
+  { value: 3, label: "Miércoles" },
+  { value: 4, label: "Jueves" },
+  { value: 5, label: "Viernes" },
+  { value: 6, label: "Sábado" },
+  { value: 0, label: "Domingo" },
+] as const;
 
-export const TIPOS_ACTIVIDAD = [
-  'Parcial 1',
-  'Parcial 2',
-  'Parcial 3',
-  'Final',
-  'Tarea',
-  'Quiz',
-] as const
+export const TIPOS_ACTIVIDAD = ["Parcial 1", "Parcial 2", "Parcial 3", "Final", "Tarea", "Quiz"] as const;
 
 export const COLORES_MATERIA = [
-  '#3b82f6',
-  '#10b981',
-  '#f59e0b',
-  '#ef4444',
-  '#8b5cf6',
-  '#ec4899',
-  '#06b6d4',
-  '#f97316',
-] as const
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#8b5cf6",
+  "#ec4899",
+  "#06b6d4",
+  "#f97316",
+] as const;
 
-export const ACTIVIDAD_TYPES = [
-  "Parcial 1",
-  "Parcial 2",
-  "Parcial 3",
-  "Final",
-  "Tarea",
-  "Quiz",
-] as const
+export const ACTIVIDAD_TYPES = ["Parcial 1", "Parcial 2", "Parcial 3", "Final", "Tarea", "Quiz"] as const;
 
-export type ActividadType =
-  (typeof ACTIVIDAD_TYPES)[number]
+export type ActividadType = (typeof ACTIVIDAD_TYPES)[number];
 
 // Tipos para el módulo de conocimiento
 export type Apunte = {
-  id: string
-  user_id: string
-  materia_id: string | null
-  titulo: string
-  contenido: string
-  categoria: number // 0=General, 1=Fórmulas, 2=Resumen, 3=Ejercicios
-  created_at: string
-  updated_at: string
-}
+  id: string;
+  user_id: string;
+  materia_id: string | null;
+  titulo: string;
+  contenido: string;
+  categoria: number; // 0=General, 1=Fórmulas, 2=Resumen, 3=Ejercicios
+  created_at: string;
+  updated_at: string;
+};
 
 export type ApunteConMateria = Apunte & {
-  materia: Pick<Materia, 'nombre' | 'color_hex'> | null
-}
+  materia: Pick<Materia, "nombre" | "color_hex"> | null;
+};
 
 export type Archivo = {
-  id: string
-  user_id: string
-  materia_id: string | null
-  nombre: string
-  url: string
-  tipo: number // 0=PDF, 1=Imagen, 2=Otro
-  tamano: number // bytes
-  created_at: string
-}
+  id: string;
+  user_id: string;
+  materia_id: string | null;
+  nombre: string;
+  url: string;
+  tipo: number; // 0=PDF, 1=Imagen, 2=Otro
+  tamano: number; // bytes
+  created_at: string;
+};
 
 export type ArchivoConMateria = Archivo & {
-  materia: Pick<Materia, 'nombre' | 'color_hex'> | null
-}
+  materia: Pick<Materia, "nombre" | "color_hex"> | null;
+};
 
 export const CATEGORIAS_APUNTE = [
-  { value: 0, label: 'General' },
-  { value: 1, label: 'Formulas' },
-  { value: 2, label: 'Resumen' },
-  { value: 3, label: 'Ejercicios' },
-] as const
+  { value: 0, label: "General" },
+  { value: 1, label: "Formulas" },
+  { value: 2, label: "Resumen" },
+  { value: 3, label: "Ejercicios" },
+] as const;
 
 export const TIPOS_ARCHIVO = [
-  { value: 0, label: 'PDF', icon: 'file-text' },
-  { value: 1, label: 'Imagen', icon: 'image' },
-  { value: 2, label: 'Otro', icon: 'file' },
-] as const
+  { value: 0, label: "PDF", icon: "file-text" },
+  { value: 1, label: "Imagen", icon: "image" },
+  { value: 2, label: "Otro", icon: "file" },
+] as const;
 
 export interface FiltrosState {
   busqueda: string;
   materias: string[];
 }
 
-export type ActionState = {
-  success: boolean;
-  message: string;
-  errors?: Record<string, string[]>;
-};
+export type ActionState<T = never> =
+  | {
+      success: true;
+      message: string;
+      data: T;
+    }
+  | {
+      success: false;
+      message: string;
+      errors?: Record<string, string[]>;
+      data?: undefined;
+    };
 
 // Límites para capa gratuita
-export const LIMITE_ARCHIVO_MB = 5
-export const LIMITE_ARCHIVO_BYTES = LIMITE_ARCHIVO_MB * 1024 * 1024
-
+export const LIMITE_ARCHIVO_MB = 5;
+export const LIMITE_ARCHIVO_BYTES = LIMITE_ARCHIVO_MB * 1024 * 1024;

@@ -2,6 +2,7 @@ import { getSemestreActual } from "@/lib/semestres/queries";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MateriaNewButton } from "./materia-new-button";
+import { MateriaButtonImportar } from "./_import/materia-button-importar";
 
 export async function MateriaHeader() {
   return (
@@ -12,7 +13,10 @@ export async function MateriaHeader() {
           <SemestreActual />
         </Suspense>
       </div>
-      <MateriaNewButton />
+      <div className="flex gap-2">
+        <MateriaButtonImportar />
+        <MateriaNewButton />
+      </div>
     </div>
   );
 }

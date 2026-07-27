@@ -1,11 +1,7 @@
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { BookPlus } from "lucide-react";
-import { MateriaNewButton } from "./materia-new-button";
-// import { getSemestreActual } from "@/lib/semestres/queries";
 
-
-export async function MateriaEmpty() {
-  // const { id } = await getSemestreActual();
+export function MateriaEmpty() {
   return (
     <Empty className="border border-dashed">
       <EmptyHeader>
@@ -17,9 +13,7 @@ export async function MateriaEmpty() {
           Tu lista de materias está vacía. Añade tus asignaturas para empezar a gestionar tus actividades y tareas.
         </EmptyDescription>
       </EmptyHeader>
-      <EmptyContent>
-        
-      </EmptyContent>
+      <EmptyContent></EmptyContent>
     </Empty>
   );
 }

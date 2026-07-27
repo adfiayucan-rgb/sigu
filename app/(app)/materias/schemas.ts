@@ -19,6 +19,14 @@ export const materiaSchema = z.object({
 
 export type MateriaFormData = z.infer<typeof materiaSchema>;
 
+export const materiaSchemaImport = materiaSchema.pick({
+  nombre: true,
+  creditos: true,
+  semestre_id: true
+});
+
+export type MateriaFormDataImport = z.infer<typeof materiaSchemaImport>
+
 export function crearMateriaPorDefecto(): MateriaFormData {
   return {
     color_hex: "",
