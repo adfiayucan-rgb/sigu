@@ -22,6 +22,10 @@ export function MateriaTableImport({ materias, onDataChange }: Props) {
         cell: ({ row }) => row.index + 1,
       },
       {
+        accessorKey: "codigo",
+        header: "Código"
+      },
+      {
         accessorKey: "nombre",
         header: "Nombre",
       },

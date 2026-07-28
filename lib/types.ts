@@ -10,10 +10,11 @@ export type Semestre = {
 
 export type Materia = {
   id: string;
-  semestre_id: string;
+  codigo: string;
   nombre: string;
   creditos: number;
   color_hex: string;
+  semestre_id: string;
 };
 
 export type MateriaWithDetails = Materia & {
@@ -154,18 +155,12 @@ export interface FiltrosState {
   materias: string[];
 }
 
-export type ActionState<T = never> =
-  | {
-      success: true;
-      message: string;
-      data: T;
-    }
-  | {
-      success: false;
-      message: string;
-      errors?: Record<string, string[]>;
-      data?: undefined;
-    };
+export type ActionState<T = null> = {
+  success: boolean;
+  message: string;
+  errors?: Record<string, string[]>;
+  data?: T;
+};
 
 // Límites para capa gratuita
 export const LIMITE_ARCHIVO_MB = 5;

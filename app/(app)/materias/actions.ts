@@ -237,6 +237,14 @@ export async function procesarMateriasPdf(pdf: File): Promise<ActionState<Proces
       errors: resultadoValidacion.errors
     };
   }
+
+  if (!resultadoValidacion.data) {
+    return {
+      success: false,
+      message: "La validación no retornó las materias"
+    }
+    
+  }
   const materiasValidadas: MateriaFormDataImport[] = resultadoValidacion.data;
 
   // 3. Consultar las materias que ya existen
@@ -262,21 +270,23 @@ async function extraerMateriasPdf(pdf: File): Promise<MateriaFormData[]> {
   const contenidoPdf = await pdfParse(buffer);
   const textoPdf = contenidoPdf.text;
 
-  const patronMateria = /\d{7}([A-ZÁÉÍÓÚÑ\s]+?)\d{7}-[A-Z](\d)/g;
+  const patronMateria = /(\d{7})([A-ZÁÉÍÓÚÑ\s]+?)\d{7}-[A-Z](\d)/g;
 
   const materiasExtraidas: MateriaFormData[] = [];
   let coincidencia;
 
   while ((coincidencia = patronMateria.exec(textoPdf)) !== null) {
-    const [, nombre, creditos] = coincidencia;
+    const [, codigo, nombre, creditos] = coincidencia;
 
     materiasExtraidas.push({
+      codigo: codigo, // Convertimos el texto a número
       nombre: nombre.trim(),
       creditos: Number(creditos),
       semestre_id: "",
       color_hex: ""
     });
   }
+  
   return materiasExtraidas;
 }
 

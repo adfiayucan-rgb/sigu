@@ -1,6 +1,6 @@
 "use client";
 
-import { Controller, useForm, useFormContext } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { crearMateriaPorDefecto, MateriaFormData, materiaSchema } from "../schemas";
 import {
   Field,
@@ -69,6 +69,25 @@ export function MateriaForm({ mode, materia, onPending, onSuccess }: Props) {
         {/* Erros */}
         {hasServerErrors && <MateriaAlertForm errors={state.errors ?? {}} />}
 
+        {/* Codigo */}
+        <Controller
+          name="codigo"
+          control={control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="codigo">Código</FieldLabel>
+              <Input
+                {...field}
+                id="codigo"
+                placeholder="Ej. - 1193376"
+                autoComplete="off"
+                aria-invalid={fieldState.invalid}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        ></Controller>
+
         {/* Nombre */}
         <Controller
           name="nombre"
@@ -87,6 +106,7 @@ export function MateriaForm({ mode, materia, onPending, onSuccess }: Props) {
             </Field>
           )}
         ></Controller>
+
         {/* Creditos */}
         <Controller
           name="creditos"
@@ -142,7 +162,6 @@ export function MateriaForm({ mode, materia, onPending, onSuccess }: Props) {
             </FieldSet>
           )}
         ></Controller>
-
       </FieldGroup>
     </form>
   );

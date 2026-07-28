@@ -5,6 +5,11 @@ export const materiaSchema = z.object({
     .string()
     .min(3, "El nombre debe tener al menos 3 caracteres")
     .max(50, "El nombre no puede superar los 50 caracteres"),
+  codigo: z.coerce
+    .string()
+    .regex(/^\d+$/, "El código solo puede contener números")
+    .min(1, "Por favor ingresar el código de la materia")
+    .max(7, "El maximo de caracteres es de 7"),
   creditos: z.coerce
     .number()
     .int("Los créditos deben ser un número entero")
@@ -20,6 +25,7 @@ export const materiaSchema = z.object({
 export type MateriaFormData = z.infer<typeof materiaSchema>;
 
 export const materiaSchemaImport = materiaSchema.pick({
+  codigo: true,
   nombre: true,
   creditos: true,
   semestre_id: true
@@ -29,9 +35,10 @@ export type MateriaFormDataImport = z.infer<typeof materiaSchemaImport>
 
 export function crearMateriaPorDefecto(): MateriaFormData {
   return {
-    color_hex: "",
-    creditos: 1,
+    codigo: "",
     nombre: "",
+    creditos: 1,
+    color_hex: "",
     semestre_id: ""
   }
 }
