@@ -22,6 +22,7 @@ export async function getMateriasConDetalles() {
     .select(
       `
         id,
+        codigo,
         nombre,
         creditos,
         color_hex,
@@ -115,24 +116,24 @@ export async function getMateriasParaSelect() {
 }
 
 export async function getMateriasStats(): Promise<MateriasStats> {
-  "use cache: private"
+  "use cache: private";
 
   const supabase = await createClient();
   const user = await requireUser(supabase);
 
   if (!user) {
     console.error("No se obtuvo usuario");
-    
+
     return {
       actividades_completadas: 0,
       actividades_pendientes: 0,
       total_creditos: 0,
-      total_materias: 0
-    }
+      total_materias: 0,
+    };
   }
 
-  cacheLife("days")
-  cacheTag(`materias-${user.id}`)
+  cacheLife("days");
+  cacheTag(`materias-${user.id}`);
 
   const { data, error } = await supabase.rpc("get_materias_stats");
 
@@ -140,7 +141,7 @@ export async function getMateriasStats(): Promise<MateriasStats> {
 
   const stats = data[0] as MateriasStats;
 
-  return stats
+  return stats;
   /*
 {
   total_materias: 7,
@@ -152,23 +153,19 @@ export async function getMateriasStats(): Promise<MateriasStats> {
 }
 
 export async function getMateriasByNombres(nombres: string[]) {
-  "use cache: private"
+  "use cache: private";
 
-  
-  const supabase = await createClient()
-  
+  const supabase = await createClient();
+
   const user = await requireUser(supabase);
   if (!user) {
     return null;
   }
 
-  cacheLife("hours")
-  cacheTag(`materias-${user.id}`)
+  cacheLife("hours");
+  cacheTag(`materias-${user.id}`);
 
-  const { data } = await supabase
-    .from("materias")
-    .select("id, nombre, color_hex")
-    .in("nombre", nombres)
+  const { data } = await supabase.from("materias").select("id, nombre, color_hex").in("nombre", nombres);
 
-  return data ?? null
+  return data ?? null;
 }
