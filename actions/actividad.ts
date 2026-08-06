@@ -161,15 +161,19 @@ export async function toggleActividadCompletada(id: string, completada: boolean)
   };
 }
 
+// TODO: Revisar codigo y mejorar
 export async function updateActividadFechaAction(
   id: string,
   data: {
     fecha_entrega?: string;
-    hora_inicio?: string;
-    hora_fin?: string;
+    hora_inicio: string | null;
+    hora_fin: string | null;
   },
 ): Promise<ActividadFormState> {
   const supabase = await createClient();
+
+  console.log(data);
+  
 
   const {
     data: { user },

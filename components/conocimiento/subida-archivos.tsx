@@ -14,8 +14,9 @@ import {
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { Upload, X, FileText, Image as ImageIcon, File } from 'lucide-react'
-import { LIMITE_ARCHIVO_MB, LIMITE_ARCHIVO_BYTES, type Materia } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { Materia } from '@/lib/types/materia'
+import { LIMITE_ARCHIVO_BYTES, LIMITE_ARCHIVO_MB } from '@/lib/constants/common'
 
 interface SubidaArchivosProps {
   materias: Pick<Materia, 'id' | 'nombre'>[]

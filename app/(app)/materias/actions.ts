@@ -9,7 +9,7 @@ import { getSemestreActual } from "@/lib/semestres/queries";
 import { getMateriasByNombres } from "@/lib/materias/queries";
 import { extractZodArrayErrors} from "@/lib/utils";
 import pdfParse from "pdf-parse";
-import { ActionState } from "@/lib/types";
+import { ActionState } from "@/lib/types/action";
 
 export type MateriaFormState = {
   success: boolean;

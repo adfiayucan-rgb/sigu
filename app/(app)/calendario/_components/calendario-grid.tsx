@@ -10,8 +10,9 @@ import {
   isToday,
 } from "date-fns";
 import { ActividadesPorDia } from "./calendario-view";
-import { ActividadConMateria } from "@/lib/types";
+
 import { CalendarDayButton } from "./calendar-day-button";
+import { ActividadConMateria } from "@/lib/types/actividad";
 
 const DIAS = ["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"];
 

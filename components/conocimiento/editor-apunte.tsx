@@ -14,8 +14,10 @@ import {
 } from '@/components/ui/select'
 import { MarkdownRenderer } from './markdown-renderer'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { CATEGORIAS_APUNTE, type Materia } from '@/lib/types'
+import { CATEGORIAS_APUNTE } from '@/lib/types'
 import { Eye, Pencil, Save, X } from 'lucide-react'
+import { Materia } from '@/lib/types/materia'
+
 
 interface EditorApunteProps {
   apunte?: {

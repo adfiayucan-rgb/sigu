@@ -2,7 +2,6 @@ import { useState } from "react";
 import { format, isToday } from "date-fns";
 import { es } from "date-fns/locale";
 import { useDraggable, useDroppable, useDndMonitor } from "@dnd-kit/core";
-import { ActividadConMateria } from "@/lib/types";
 import {
   addMinutesToTime,
   DAY_START_HOUR,
@@ -16,6 +15,7 @@ import { hexToRgba } from "@/lib/utils";
 import { ActividadesPorDia } from "./calendario-view";
 import { AnimatePresence, motion } from "motion/react";
 import { Badge } from "@/components/ui/badge";
+import { ActividadConMateria } from "@/lib/types/actividad";
 
 // ─── Draggable activity block ─────────────────────────────────────────────────
 function ActividadBlockDia({
@@ -66,11 +66,11 @@ function ActividadBlockDia({
         >
           {actividad.titulo}
         </span>
-        {actividad.lugar && (
+        {/* {actividad.lugar && (
           <span className="text-[12px] leading-4 mt-0.5" style={{ color: actividad.materia.color_hex }}>
             {actividad.lugar}
           </span>
-        )}
+        )} */}
         {actividad.materia && (
           <span
             className="text-[11px] leading-3.5 mt-auto opacity-70"

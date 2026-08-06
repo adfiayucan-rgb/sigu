@@ -4,36 +4,50 @@ import { cacheLife, cacheTag } from "next/cache";
 import { createClient } from "../supabase/server";
 import { addDays, format, startOfDay } from "date-fns";
 import { requireUser } from "../supabase/auth";
-import { Actividad, ActividadConMateria } from "../types";
+import { Actividad, ActividadConMateria } from "../types/actividad";
 
-export async function getActividadByDate(date: string) {
+export async function getActividadConMateriaByDate(date: string): Promise<ActividadConMateria[]> {
+  "use cache: private";
   const supabase = await createClient();
 
-  const start = format(startOfDay(date), "yyyy-MM-dd");
+  const user = await requireUser(supabase);
+  if (!user) {
+    return [];
+  }
 
+  cacheLife("weeks");
+  cacheTag(`actividades-${user.id}`);
+
+  const start = format(startOfDay(date), "yyyy-MM-dd");
   const end = format(addDays(startOfDay(date), 1), "yyyy-MM-dd");
 
   const { data, error } = await supabase
     .from("actividades")
     .select(
       `
-      id,
-      titulo,
-      tipo,
-      fecha_entrega,
-      completada,
-      nota,
-      porcentaje_manual,
-      es_examen,
-      descripcion,
-      materia_id,
-
-      materia:materias (
-        nombre,
-        color_hex,
-        semestres!inner()
-      )
-    `,
+        id,
+        titulo,
+        tipo,
+        fecha_entrega,
+        hora_inicio,
+        hora_fin,
+        completada,
+        nota,
+        porcentaje_manual,
+        es_examen,
+        descripcion,
+        materia_id,
+        materia:materias (
+          id,
+          codigo,
+          nombre,
+          creditos,
+          color_hex,
+          profesor,
+          semestre_id,
+          semestres!inner()
+        )
+      `,
     )
     .eq("materia.semestres.es_actual", true)
     .gte("fecha_entrega", start)
@@ -42,19 +56,48 @@ export async function getActividadByDate(date: string) {
 
   if (error) throw error;
 
-  return data as unknown as ActividadConMateria[];
+  return data;
 }
 
-export async function getActividadById(id: string) {
+export async function getActividadById(id: string): Promise<ActividadConMateria | null> {
+  "use cache: private";
   const supabase = await createClient();
+
+  const user = await requireUser(supabase);
+  if (!user) {
+    return null;
+  }
+
+  cacheLife("weeks");
+  cacheTag(`actividades-${user.id}`);
 
   const { data, error } = await supabase
     .from("actividades")
     .select(
       `
-      *,
-      materia:materias(*)
-    `,
+        id,
+        titulo,
+        tipo,
+        fecha_entrega,
+        hora_inicio,
+        hora_fin,
+        completada,
+        nota,
+        porcentaje_manual,
+        es_examen,
+        descripcion,
+        materia_id,
+        materia:materias (
+          id,
+          codigo,
+          nombre,
+          creditos,
+          color_hex,
+          profesor,
+          semestre_id,
+          semestres!inner()
+        )
+      `,
     )
     .eq("id", id)
     .maybeSingle();
@@ -84,7 +127,7 @@ export async function getCalendarioModifiers(year: number, month: number) {
   return uniqueDates;
 }
 
-export async function getActividades() {
+export async function getActividades(): Promise<Actividad[]> {
   "use cache: private";
 
   const supabase = await createClient();
@@ -95,8 +138,8 @@ export async function getActividades() {
     return [];
   }
 
+  cacheLife("weeks");
   cacheTag(`actividades-${user.id}`);
-  cacheLife({ stale: 60 });
 
   const { data, error } = await supabase
     .from("actividades")
@@ -123,49 +166,53 @@ export async function getActividades() {
 
   if (error) throw error;
 
-  return data as unknown as Actividad[];
+  return data;
 }
 
-export async function getActividadesConMateria() {
+export async function getActividadesConMateria(): Promise<ActividadConMateria[]> {
   "use cache: private";
 
   const supabase = await createClient();
 
   const user = await requireUser(supabase);
-
   if (!user) {
     return [];
   }
 
+  cacheLife("weeks");
   cacheTag(`actividades-${user.id}`);
-  cacheLife({ stale: 60 });
 
   const { data, error } = await supabase
     .from("actividades")
     .select(
       `
-      id,
-      titulo,
-      tipo,
-      fecha_entrega,
-      completada,
-      nota,
-      porcentaje_manual,
-      es_examen,
-      descripcion,
-      materia_id,
-      hora_inicio,
-      hora_fin, 
-      materia:materias!inner (
-        nombre,
-        color_hex,
-        semestres!inner()
-      )
-    `,
+        id,
+        titulo,
+        tipo,
+        fecha_entrega,
+        hora_inicio,
+        hora_fin,
+        completada,
+        nota,
+        porcentaje_manual,
+        es_examen,
+        descripcion,
+        materia_id,
+        materia:materias (
+          id,
+          codigo,
+          nombre,
+          creditos,
+          color_hex,
+          profesor,
+          semestre_id,
+          semestres!inner()
+        )
+      `,
     )
     .eq("materia.semestres.es_actual", true);
 
   if (error) throw error;
 
-  return data as unknown as ActividadConMateria[];
+  return data;
 }

@@ -1,10 +1,11 @@
 "use client";
 import { ActividadChip } from "@/components/actividad/actividad-chip";
 import { Badge } from "@/components/ui/badge";
-import { ActividadConMateria } from "@/lib/types";
+
 import { useState } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { AnimatePresence, motion } from "motion/react";
+import { ActividadConMateria } from "@/lib/types/actividad";
 
 const MAX_VISIBLE = 2;
 

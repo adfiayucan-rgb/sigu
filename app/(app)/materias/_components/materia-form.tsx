@@ -12,13 +12,14 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { COLORES_MATERIA, Materia } from "@/lib/types";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { MateriaAlertForm } from "./materia-alert-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useActionState, useEffect } from "react";
 import { createMateriaAction, MateriaFormState, updateMateriaAction } from "../actions";
 import { toast } from "sonner";
+import type { Materia } from "@/lib/types/materia";
+import { COLORES_MATERIA } from "@/lib/constants/materia";
 
 const initialState: MateriaFormState = { success: false, message: "" };
 

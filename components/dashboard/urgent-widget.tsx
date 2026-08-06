@@ -5,8 +5,8 @@ import { Badge } from '@/components/ui/badge'
 import { Clock, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { format, differenceInHours, isPast, isToday, isTomorrow } from 'date-fns'
 import { es } from 'date-fns/locale'
-import type { ActividadConMateria } from '@/lib/types'
 import { formatearA12Horas } from '@/lib/utils'
+import type { ActividadConMateria } from '@/lib/types/actividad'
 
 export function UrgentWidget({ actividades }: { actividades: ActividadConMateria[] }) {
   const now = new Date()

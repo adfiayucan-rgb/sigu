@@ -1,5 +1,4 @@
 import { ActividadFormData, actividadSchema, crearActividadPorDefecto } from "@/app/(app)/calendario/schemas";
-import { ActividadConMateria, MateriaSelect, TIPOS_ACTIVIDAD } from "@/lib/types";
 import { Controller, useForm } from "react-hook-form";
 import {
   Field,
@@ -20,11 +19,14 @@ import { ActividadFormState, createActividadAction, updateActividadAction } from
 import { useActionState, useEffect, useTransition } from "react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { MateriaParaSelect } from "@/lib/types/materia";
+import { ActividadConMateria } from "@/lib/types/actividad";
+import { TIPOS_ACTIVIDAD } from "@/lib/constants/actividad";
 
 const initialState: ActividadFormState = { message: "", success: false };
 
 type Props = {
-  materias: MateriaSelect[];
+  materias: MateriaParaSelect[];
   fecha?: string;
   horaInicio?: string;
   onPending: (pending: boolean) => void;
@@ -155,7 +157,7 @@ export function ActividadForm({ materias, fecha, horaInicio, mode, actividad, on
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid || undefined}>
                       <FieldLabel htmlFor="hora_inicio">Hora inicio</FieldLabel>
-                      <Input id="hora_inicio" type="time" {...field} />
+                      <Input id="hora_inicio" type="time" {...field} value={field.value ?? ""} />
                       <FieldError errors={[fieldState.error]} />
                     </Field>
                   )}
@@ -167,7 +169,7 @@ export function ActividadForm({ materias, fecha, horaInicio, mode, actividad, on
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid || undefined}>
                       <FieldLabel htmlFor="hora_fin">Hora fin</FieldLabel>
-                      <Input id="hora_fin" type="time" {...field} />
+                      <Input id="hora_fin" type="time" {...field} value={field.value ?? ""} />
                       <FieldError errors={[fieldState.error]} />
                     </Field>
                   )}
@@ -245,7 +247,7 @@ export function ActividadForm({ materias, fecha, horaInicio, mode, actividad, on
               <Field orientation="horizontal">
                 <Checkbox
                   id="completada"
-                  checked={field.value}
+                  checked={field.value ?? false}
                   onCheckedChange={(checked) => field.onChange(checked === true)}
                 />
                 <FieldLabel htmlFor="completada">Marcar como completada</FieldLabel>

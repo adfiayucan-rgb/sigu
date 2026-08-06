@@ -1,10 +1,10 @@
 import { DeleteModal } from "@/components/delete-modal";
 import { deleteMateriaAction } from "../actions";
-import { MateriaWithDetails } from "@/lib/types";
 import { toast } from "sonner";
+import type { Materia } from "@/lib/types/materia";
 
 type Props = {
-  materia: MateriaWithDetails;
+  materia: Materia;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };

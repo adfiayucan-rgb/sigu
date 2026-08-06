@@ -1,4 +1,3 @@
-import { Actividad } from "@/lib/types";
 import { DeleteModal } from "../delete-modal";
 import { deleteActividadAction } from "@/actions/actividad";
 import { toast } from "sonner";

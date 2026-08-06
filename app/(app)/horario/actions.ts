@@ -1,11 +1,12 @@
 "use server";
 
-import { type ActionState } from "@/lib/types";
+
 import { HorarioFormData, horarioSchema } from "./schema";
 import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/supabase/auth";
 import { createHorario, updateHorario } from "@/lib/horario/mutations";
 import { updateTag } from "next/cache";
+import { ActionState } from "@/lib/types/action";
 
 export async function updateHorarioAction(
   id: string,

@@ -1,8 +1,9 @@
-import { ActividadConMateria } from "@/lib/types";
+
 import { hexToRgba } from "@/lib/utils";
 import { useDraggable } from "@dnd-kit/core";
 import { motion } from "motion/react";
 import { CSS } from "@dnd-kit/utilities";
+import { ActividadConMateria } from "@/lib/types/actividad";
 
 interface ActividadChipProps {
   actividad: ActividadConMateria;

@@ -5,8 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { MateriaFormData } from "../../schemas";
 import { Dispatch, SetStateAction, useMemo } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { COLORES_MATERIA } from "@/lib/types";
 import { motion } from "motion/react";
+import { COLORES_MATERIA } from "@/lib/constants/materia";
 
 interface Props {
   materias: MateriaFormData[];

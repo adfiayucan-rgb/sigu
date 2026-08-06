@@ -1,4 +1,5 @@
-import { Horario, HorarioConMateria } from "@/lib/types";
+
+import type { Horario, HorarioConMateria } from "@/lib/types/horario";
 import { timeToMinutes } from "@/lib/utils-time";
 import { Clock, MapPin } from "lucide-react";
 

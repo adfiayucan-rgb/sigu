@@ -2,8 +2,8 @@
 
 import { cacheLife, cacheTag } from "next/cache";
 import { createClient } from "../supabase/server";
-import { Materia, MateriaWithDetails } from "../types";
 import { requireUser } from "../supabase/auth";
+import type { Materia, MateriaConHorarioYActividades, MateriaParaSelect } from "../types/materia";
 
 export interface MateriasStats {
   total_materias: number;
@@ -12,10 +12,17 @@ export interface MateriasStats {
   actividades_pendientes: number;
 }
 
-export async function getMateriasConDetalles() {
+export async function getMateriaConHorarioYActividades(): Promise<MateriaConHorarioYActividades[]> {
+  "use cache: private";
   const supabase = await createClient();
 
-  const hoy = new Date().toISOString().split("T")[0];
+  const user = await requireUser(supabase);
+  if (!user) {
+    return [];
+  }
+
+  cacheLife("weeks");
+  cacheTag(`materias-${user.id}`);
 
   const { data, error } = await supabase
     .from("materias")
@@ -28,9 +35,7 @@ export async function getMateriasConDetalles() {
         color_hex,
         profesor,
         semestre_id,
-        semestres!inner(
-            es_actual
-        ),
+        semestres!inner(),
         horarios(
             id,
             dia,
@@ -47,37 +52,40 @@ export async function getMateriasConDetalles() {
             completada,
             nota,
             porcentaje_manual,
-            es_examen
+            es_examen,
+            hora_fin, 
+            hora_inicio, 
+            descripcion,
+            materia_id
         )
     `,
     )
     .eq("semestres.es_actual", true)
     .eq("actividades.es_examen", true);
-  // .gte("actividades.fecha_entrega", hoy);
 
   if (error) throw error;
 
-  return data as unknown as MateriaWithDetails[];
+  return data;
 }
 
-export async function getMaterias() {
+export async function getMaterias(): Promise<Materia[]> {
   "use cache: private";
 
-  cacheLife("hours");
-  cacheTag("materias");
-
   const supabase = await createClient();
+
+  const user = await requireUser(supabase);
+  if (!user) {
+    return [];
+  }
+
+  cacheLife("weeks");
+  cacheTag(`materias-${user.id}`);
 
   const { data, error } = await supabase
     .from("materias")
     .select(
       `
-        id,
-        nombre,
-        color_hex,
-        creditos,
-        semestre_id,
-        profesor,
+        *,
         semestre:semestres!inner()
       `,
     )
@@ -86,22 +94,27 @@ export async function getMaterias() {
 
   if (error) throw error;
 
-  return data as unknown as Materia[];
+  return data;
 }
 
-export async function getMateriasParaSelect() {
+export async function getMateriasParaSelect(): Promise<MateriaParaSelect[]> {
   "use cache: private";
 
-  cacheLife("hours");
-  cacheTag("materias");
-
   const supabase = await createClient();
+  const user = await requireUser(supabase);
+  if (!user) {
+    return [];
+  }
+
+  cacheLife("weeks");
+  cacheTag(`materias-${user.id}`);
 
   const { data, error } = await supabase
     .from("materias")
     .select(
       `
         id,
+        codigo,
         nombre,
         color_hex,
         semestres!inner()
@@ -132,7 +145,7 @@ export async function getMateriasStats(): Promise<MateriasStats> {
     };
   }
 
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`materias-${user.id}`);
 
   const { data, error } = await supabase.rpc("get_materias_stats");

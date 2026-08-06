@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { HorarioConMateria } from "@/lib/types";
+import { HorarioConMateria } from "@/lib/types/horario";
 import { timeToMinutes } from "@/lib/utils-time";
 import { Calendar, Clock } from "lucide-react";
 

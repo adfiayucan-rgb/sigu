@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getHorariosByDay } from "@/lib/horario/queries";
-import { Horario } from "@/lib/types";
+import { getHorariosConMateriaPorDia } from "@/lib/horario/queries";
+import { Horario } from "@/lib/types/horario";
 import { formatearA12Horas } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -51,7 +51,7 @@ export function DashboardTodaySchedule() {
 
 async function ClasesHoy() {
   const today = new Date().getDay();
-  const clasesHoy = await getHorariosByDay(today);
+  const clasesHoy = await getHorariosConMateriaPorDia(today);
 
   return (
     <div>

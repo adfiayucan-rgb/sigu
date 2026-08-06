@@ -2,13 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Clock, MapPin } from "lucide-react";
-import type { Actividad, MateriaWithDetails } from "@/lib/types";
+
 import { MateriaRowActions } from "@/app/(app)/materias/_components/materia-row-actions";
+import { MateriaConHorarioYActividades } from "@/lib/types/materia";
+import { Actividad } from "@/lib/types/actividad";
 
 type Props = {
-  materia: MateriaWithDetails;
-  onEdit: (materia: MateriaWithDetails) => void;
-  onDelete: (materia: MateriaWithDetails) => void;
+  materia: MateriaConHorarioYActividades;
+  onEdit: (materia: MateriaConHorarioYActividades) => void;
+  onDelete: (materia: MateriaConHorarioYActividades) => void;
 };
 
 const DIAS_LABEL: Record<number, string> = {

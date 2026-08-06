@@ -1,6 +1,5 @@
 "use client";
 
-import { ActividadConMateria, MateriaSelect } from "@/lib/types";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +21,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { MateriaParaSelect } from "@/lib/types/materia";
+import { ActividadConMateria } from "@/lib/types/actividad";
 
 type View = "dialog" | "sheet";
 
@@ -30,7 +31,7 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   fecha?: string;
   horaInicio?: string;
-  materias: MateriaSelect[];
+  materias: MateriaParaSelect[];
   view?: View;
 } & (
   | {

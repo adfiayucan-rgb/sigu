@@ -1,7 +1,7 @@
+import { LIMITE_ARCHIVO_BYTES } from '@/lib/constants/common'
 import { createClient } from '@/lib/supabase/server'
 import { put } from '@vercel/blob'
 import { NextResponse } from 'next/server'
-import { LIMITE_ARCHIVO_BYTES } from '@/lib/types'
 
 export async function GET(request: Request) {
   const supabase = await createClient()

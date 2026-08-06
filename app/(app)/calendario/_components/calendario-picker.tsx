@@ -2,7 +2,7 @@
 
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ActividadConMateria } from "@/lib/types";
+import { ActividadConMateria } from "@/lib/types/actividad";
 import { parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { useMemo, useState } from "react";

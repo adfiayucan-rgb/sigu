@@ -1,11 +1,14 @@
-"use server";
+"use server"
+import { createClient } from "@/lib/supabase/server";
 
-import { SupabaseClient } from "@supabase/supabase-js";
+type Supabase = Awaited<ReturnType<typeof createClient>>;
 
-export async function requireUser(supabase: SupabaseClient) {
+export async function requireUser(
+  supabase: Supabase
+) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return user
+  return user;
 }

@@ -1,5 +1,8 @@
 import useSWR from 'swr'
-import type { Semestre, Materia, ActividadConMateria, HorarioConMateria } from '@/lib/types'
+import { Semestre } from './types/semestre'
+import { Materia } from './types/materia'
+import { ActividadConMateria } from './types/actividad'
+import { HorarioConMateria } from './types/horario'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 

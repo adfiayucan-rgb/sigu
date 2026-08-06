@@ -1,4 +1,3 @@
-import { ActionState, DIAS_SEMANA, Horario } from "@/lib/types";
 import { Controller, useForm } from "react-hook-form";
 import { crearHorarioPorDefecto, HorarioFormData, horarioSchema } from "../schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +8,9 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useMaterias } from "@/lib/hooks";
+import { ActionState } from "@/lib/types/action";
+import { Horario } from "@/lib/types/horario";
+import { DIAS_SEMANA } from "@/lib/constants/common";
 
 const estadoInicial: ActionState = { success: false, message: "" };
 
@@ -166,6 +168,7 @@ export function HorarioForm({ horario, onPendingChange, onSuccess }: Props) {
                 <FieldLabel htmlFor="salon">Salón</FieldLabel>
                 <Input
                   {...field}
+                  value={field.value ?? ""}
                   id="salon"
                   placeholder="Opcional"
                   autoComplete="off"

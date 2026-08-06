@@ -8,14 +8,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MateriaWithDetails } from "@/lib/types";
+import { MateriaConHorarioYActividades } from "@/lib/types/materia";
+
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
 
 
 type Props = {
-  materia: MateriaWithDetails;
-  onEdit: (materia: MateriaWithDetails) => void;
-  onDelete: (materia: MateriaWithDetails) => void;
+  materia: MateriaConHorarioYActividades;
+  onEdit: (materia: MateriaConHorarioYActividades) => void;
+  onDelete: (materia: MateriaConHorarioYActividades) => void;
 };
 export function MateriaRowActions({ materia, onDelete, onEdit }: Props) {
   return (

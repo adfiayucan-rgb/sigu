@@ -1,5 +1,4 @@
 "use client";
-import { ActividadConMateria, FiltrosState, MateriaSelect } from "@/lib/types";
 import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { CalendarioVistaMensual } from "./calendario-grid";
@@ -27,6 +26,9 @@ import { ActividadDetail } from "@/components/actividad/actividad-detail";
 import { ActividadDeleteDialog } from "@/components/actividad/actividad-delete-dialog";
 import { CalendarioVistaDiaria } from "./calendario-vista-diaria";
 import { addMinutesToTime, deltaYToMinutes } from "@/lib/utils-time";
+import { ActividadConMateria } from "@/lib/types/actividad";
+import { MateriaParaSelect } from "@/lib/types/materia";
+import { FiltrosState } from "@/lib/types/common";
 
 // ─── Drag overlay chip ────────────────────────────────────────────────────────
 function DragChip({
@@ -53,11 +55,11 @@ function DragChip({
         <span className="text-[11px] font-bold" style={{ color: actividad.materia.color_hex }}>
           {actividad.titulo}
         </span>
-        {actividad.lugar && (
+        {/* {actividad.lugar && (
           <span className="text-[10px]" style={{ color: actividad.materia.color_hex }}>
             {actividad.lugar}
           </span>
-        )}
+        )} */}
       </div>
     </div>
   );
@@ -67,7 +69,7 @@ export type ActividadesPorDia = Record<string, ActividadConMateria[]>;
 
 type Props = {
   initialActividades: ActividadConMateria[];
-  materias: MateriaSelect[];
+  materias: MateriaParaSelect[];
 };
 export function CalendarioView({ initialActividades, materias }: Props) {
   const [actividades, setActividades] = useState<ActividadConMateria[]>(initialActividades);
@@ -188,11 +190,14 @@ export function CalendarioView({ initialActividades, materias }: Props) {
 
     let updateData: {
       fecha_entrega?: string;
-      hora_inicio?: string;
-      hora_fin?: string;
-    } = {};
+      hora_inicio: string | null;
+      hora_fin: string | null;
+    } = {
+      hora_fin: null, hora_inicio: null
+    };
 
     // ========= Vista mensual =========
+    // !ERROR: Hay que tener el encuenta la hora al momento de mover
     if (view === "mes") {
       if (!over) return;
 
@@ -230,9 +235,9 @@ export function CalendarioView({ initialActividades, materias }: Props) {
         }
       }
 
-      const newInicio = act.hora_inicio ? addMinutesToTime(act.hora_inicio, deltaMinutes) : undefined;
+      const newInicio = act.hora_inicio ? addMinutesToTime(act.hora_inicio, deltaMinutes) : null;
 
-      const newFin = act.hora_fin ? addMinutesToTime(act.hora_fin, deltaMinutes) : undefined;
+      const newFin = act.hora_fin ? addMinutesToTime(act.hora_fin, deltaMinutes) : null;
 
       if (newDateKey === act.fecha_entrega && deltaMinutes === 0) {
         return;
@@ -264,9 +269,9 @@ export function CalendarioView({ initialActividades, materias }: Props) {
 
       if (deltaMinutes === 0) return;
 
-      const newInicio = act.hora_inicio ? addMinutesToTime(act.hora_inicio, deltaMinutes) : undefined;
+      const newInicio = act.hora_inicio ? addMinutesToTime(act.hora_inicio, deltaMinutes) : null;
 
-      const newFin = act.hora_fin ? addMinutesToTime(act.hora_fin, deltaMinutes) : undefined;
+      const newFin = act.hora_fin ? addMinutesToTime(act.hora_fin, deltaMinutes) : null;
 
       updateData = {
         hora_inicio: newInicio,

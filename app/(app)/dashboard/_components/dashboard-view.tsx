@@ -1,4 +1,3 @@
-import { ActividadConMateria, Horario, Materia } from "@/lib/types";
 import { DashboardTodaySchedule } from "./dashboard-today-schedule";
 import { DashboardQuickStats } from "./dashboard-quick-stats";
 import { QuickTaskWidget } from "@/components/dashboard/quick-task-widget";
@@ -7,6 +6,8 @@ import { Suspense } from "react";
 import { UrgentWidget } from "@/components/dashboard/urgent-widget";
 import { GradeOverview } from "@/components/dashboard/grade-overview";
 import { ProgressChart } from "@/components/dashboard/progress-chart";
+import { Materia } from "@/lib/types/materia";
+import type { ActividadConMateria } from "@/lib/types/actividad";
 
 type Props = {
   materias: Materia[];

@@ -9,23 +9,23 @@ export const actividadSchema = z.object({
     .min(3, "El titulo debe tener mínimo 3 caracteres")
     .max(120, "El titulo solo puede tener máximo 120 caracteres"),
 
-  tipo: z.enum(["Parcial 1", "Parcial 2", "Parcial 3", "Final", "Tarea", "Quiz"]),
+  tipo: z.string().min(1, "El tipo es requerido"),
 
   fecha_entrega: z.string(),
 
-  descripcion: z.string().trim().max(500).optional(),
+  descripcion: z.string().trim().max(500).nullable(),
 
   nota: z.number().min(0).max(5).nullable(),
 
   porcentaje_manual: z.number().min(0).max(100).nullable(),
 
-  completada: z.boolean(),
+  completada: z.boolean().nullable(),
 
   es_examen: z.boolean(),
 
-  hora_inicio: z.string().min(1, "La hora de inicio es requerida"),
+  hora_inicio: z.string().nullable(),
 
-  hora_fin: z.string().min(1, "La hora de fin es requerida"),
+  hora_fin: z.string().nullable(),
 });
 
 export type ActividadFormData = z.infer<typeof actividadSchema>;

@@ -2,10 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Materia } from "@/lib/types";
+
 import { useState } from "react";
 import { MateriaForm } from "./materia-form";
 import { Spinner } from "@/components/ui/spinner";
+import { Materia } from "@/lib/types/materia";
 
 type MateriaFormDialogProps = ({ mode: "create"; materia?: undefined } | { mode: "edit"; materia: Materia }) & {
   open: boolean;

@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MateriaFormData } from "../../schemas";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { COLORES_MATERIA } from "@/lib/types";
+import { COLORES_MATERIA } from "@/lib/constants/materia";
 
 export const columns: ColumnDef<MateriaFormData>[] = [
   {

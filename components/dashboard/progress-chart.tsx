@@ -1,9 +1,9 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { ActividadConMateria } from '@/lib/types/actividad'
 import { CheckCircle2, Circle, ListTodo } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
-import type { ActividadConMateria } from '@/lib/types'
 
 export function ProgressChart({ actividades }: { actividades: ActividadConMateria[] }) {
   const completadas = actividades.filter((a) => a.completada).length

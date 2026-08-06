@@ -1,11 +1,11 @@
 "use client"
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Horario, HorarioConMateria } from "@/lib/types";
 import { HORAS } from "@/lib/utils-time";
 import { HorarioChip } from "./horario-chip";
 import { HorarioNewButton } from "./horario-new-button";
 import { useState } from "react";
 import { HorarioFormDialog } from "./horario-form-dialog";
+import type { Horario, HorarioConMateria } from "@/lib/types/horario";
 
 const DIAS = [
   { value: 1, label: "Lunes", short: "Lun" },

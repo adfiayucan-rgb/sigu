@@ -1,6 +1,5 @@
 "use client";
 
-import { Horario } from "@/lib/types";
 import { useState } from "react";
 import {
   Dialog,
@@ -13,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { HorarioForm } from "./horario-form";
+import { Horario } from "@/lib/types/horario";
 
 type Props = {
   open: boolean;

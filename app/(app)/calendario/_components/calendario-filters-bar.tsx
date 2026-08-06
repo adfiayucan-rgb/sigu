@@ -11,15 +11,16 @@ import {
   ComboboxValue,
   useComboboxAnchor,
 } from "@/components/ui/combobox";
-import { FiltrosState, MateriaSelect } from "@/lib/types";
 import { SearchIcon } from "lucide-react";
+import type { MateriaParaSelect } from "@/lib/types/materia";
+import type { FiltrosState } from "@/lib/types/common";
 
 type Props = {
   filtros: FiltrosState;
   onBusqueda: (q: string) => void;
   onToggleMateria: (m: string[]) => void;
   onClearFiltros: () => void;
-  materias: MateriaSelect[];
+  materias: MateriaParaSelect[];
 };
 export function CalendarioFiltersBar({ filtros, materias, onBusqueda, onClearFiltros, onToggleMateria }: Props) {
   const hasFiltros = filtros.busqueda || filtros.materias.length > 0;

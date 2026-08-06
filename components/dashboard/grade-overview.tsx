@@ -2,8 +2,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import type { ActividadConMateria } from '@/lib/types/actividad'
+import type { Materia } from '@/lib/types/materia'
 import { TrendingUp, Award } from 'lucide-react'
-import type { Materia, ActividadConMateria } from '@/lib/types'
 
 function calcularNota70(materia: Materia, actividades: ActividadConMateria[]) {
   const acts = actividades.filter((a) => a.materia_id === materia.id)

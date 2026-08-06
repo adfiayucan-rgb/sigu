@@ -1,27 +1,27 @@
 "use client";
 
 import { MateriaCard } from "@/components/materias/materia-card";
-import { MateriaWithDetails } from "@/lib/types";
 import { MateriaEmpty } from "./materia-empty";
 import { useState } from "react";
 import { MateriaDeleteDialog } from "./materia-delete-dialog";
 import { MateriaFormDialog } from "./materia-form-dialog";
+import type { Materia, MateriaConHorarioYActividades } from "@/lib/types/materia";
 
 type Props = {
-  materias: MateriaWithDetails[];
+  materias: MateriaConHorarioYActividades[];
 };
 
 export function MateriaList({ materias }: Props) {
-  const [selectedMateria, setSelectedMateria] = useState<MateriaWithDetails | undefined>(undefined);
+  const [selectedMateria, setSelectedMateria] = useState<Materia | undefined>(undefined);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const handleEdit = (materia: MateriaWithDetails) => {
+  const handleEdit = (materia: Materia) => {
     setSelectedMateria(materia);
     setEditOpen(true);
   };
 
-  const handleDelete = (materia: MateriaWithDetails) => {
+  const handleDelete = (materia: Materia) => {
     setSelectedMateria(materia);
     setDeleteOpen(true);
   };

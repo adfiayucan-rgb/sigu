@@ -1,4 +1,3 @@
-import { ActividadConMateria } from "@/lib/types";
 import { ActividadesPorDia } from "./calendario-view";
 import { addDays, format, isToday, isWeekend, startOfWeek } from "date-fns";
 import { useRef } from "react";
@@ -6,6 +5,7 @@ import { DAY_START_HOUR, durationToHeight, HOURS, SLOT_HEIGHT, timeToTop } from 
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { motion, AnimatePresence } from "motion/react";
 import { hexToRgba } from "@/lib/utils";
+import { ActividadConMateria } from "@/lib/types/actividad";
 
 const DIAS_SEMANA = ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"];
 
@@ -66,11 +66,11 @@ function ActividadBlock({
         >
           {actividad.titulo}
         </span>
-        {height > 40 && actividad.lugar && (
+        {/* {height > 40 && actividad.lugar && (
           <span className="text-[9px] leading-3 truncate" style={{ color: actividad.materia.color_hex }}>
             {actividad.lugar}
           </span>
-        )}
+        )} */}
         {height > 56 && actividad.es_examen && (
           <span
             className="mt-auto text-[8px] font-bold tracking-wide px-1 py-px rounded-[2px] self-start"

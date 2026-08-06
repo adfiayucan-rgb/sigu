@@ -1,7 +1,8 @@
-import { MateriaSelect } from "@/lib/types";
+import { MateriaParaSelect } from "@/lib/types/materia";
+
 
 type Props = {
-    materias: MateriaSelect[]
+    materias: MateriaParaSelect[]
 }
 export function CalendarioLegend({materias} : Props) {
   return (

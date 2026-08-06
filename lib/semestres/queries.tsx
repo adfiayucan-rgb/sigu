@@ -1,8 +1,9 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { requireUser } from "../supabase/auth";
 import { createClient } from "../supabase/server";
+import { Semestre } from "../types/semestre";
 
-export async function getSemestreActual() {
+export async function getSemestreActual(): Promise<Semestre> {
   "use cache: private";
 
   const supabase = await createClient();
@@ -11,18 +12,20 @@ export async function getSemestreActual() {
 
   if (!user) {
     return {
-      id: null,
-      nombre: null,
-      fecha_fin: null,
+      es_actual: false,
+      fecha_fin: "",
+      fecha_inicio: "",
+      id: "",
+      nombre: "",
     };
   }
 
   cacheTag(`semestres-${user.id}`);
-  cacheLife("hours");
+  cacheLife("weeks");
 
   const { data, error } = await supabase
     .from("semestres")
-    .select("id, nombre, fecha_fin")
+    .select("id, nombre, fecha_fin, fecha_inicio, es_actual")
     .eq("es_actual", true)
     .maybeSingle();
 
@@ -30,9 +33,11 @@ export async function getSemestreActual() {
 
   return (
     data ?? {
-      id: null,
-      nombre: null,
-      fecha_fin: null,
+      es_actual: false,
+      fecha_fin: "",
+      fecha_inicio: "",
+      id: "",
+      nombre: "",
     }
   );
 }

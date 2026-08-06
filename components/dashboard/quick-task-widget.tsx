@@ -7,48 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Zap, Send, BookOpen, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { DIAS_SEMANA, type Horario, type HorarioConMateria, type Materia } from "@/lib/types";
 import { formatearA12Horas } from "@/lib/utils";
-
-function getCurrentClassMateria(
-  horarios: Horario[],
-  materias: Materia[],
-): { materia: Materia | null; horario: Horario | null; message: string } {
-  const now = new Date();
-  const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
-  const currentTime = now.getHours() * 60 + now.getMinutes();
-
-  // Find horario that matches current day and time
-  const activeHorario = horarios.find((h) => {
-    if (h.dia !== currentDay) return false;
-
-    const [startHour, startMin] = h.hora_inicio.split(":").map(Number);
-    const [endHour, endMin] = h.hora_fin.split(":").map(Number);
-    const startTime = startHour * 60 + startMin;
-    const endTime = endHour * 60 + endMin;
-
-    return currentTime >= startTime && currentTime <= endTime;
-  });
-
-  if (activeHorario) {
-    const materia = materias.find((m) => m.id === activeHorario.materia_id);
-    if (materia) {
-      return {
-        materia,
-        horario: activeHorario,
-        message: `Actualmente en clase de ${materia.nombre}`,
-      };
-    }
-  }
-
-  // No active class
-  const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-  return {
-    materia: null,
-    horario: null,
-    message: `No hay clases programadas para ${diasSemana[currentDay]} a las ${formatearA12Horas(now.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" }))}`,
-  };
-}
+import { HorarioConMateria } from "@/lib/types/horario";
 
 const DIAS_LABEL: Record<number, string> = {
   0: "Domingo",

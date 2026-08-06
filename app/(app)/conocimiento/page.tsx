@@ -18,7 +18,8 @@ import { MarkdownRenderer } from '@/components/conocimiento/markdown-renderer'
 import { SubidaArchivos } from '@/components/conocimiento/subida-archivos'
 import { ListaArchivos } from '@/components/conocimiento/lista-archivos'
 import { FileText, FolderOpen, ArrowLeft, Edit } from 'lucide-react'
-import { type ApunteConMateria, type Materia } from '@/lib/types'
+import { type ApunteConMateria} from '@/lib/types'
+import { Materia } from '@/lib/types/materia'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 

@@ -1,5 +1,4 @@
 
-import { ActividadConMateria } from "@/lib/types";
 import { Badge } from "../ui/badge";
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "../ui/sheet";
 import { Calendar, ClipboardCheck, MapPin, Notebook, Pencil, Shapes, Trash2 } from "lucide-react";
@@ -17,6 +16,7 @@ import { hexToRgba } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { DateFormat, formatDate } from "@/lib/format-date";
 import { formatTimeRange } from "@/lib/format-date-range";
+import { ActividadConMateria } from "@/lib/types/actividad";
 
 type Props = {
   actividad: ActividadConMateria;
@@ -68,7 +68,7 @@ export function ActividadDetail({ actividad, open, onOpenChange, onDelete, onEdi
                         </Item>
                       )}
 
-                      {actividad.lugar && (
+                      {/* {actividad.lugar && (
                         <Item>
                           <ItemMedia variant="icon">
                             <MapPin />
@@ -78,7 +78,7 @@ export function ActividadDetail({ actividad, open, onOpenChange, onDelete, onEdi
                             <ItemDescription>Aula 302 - Edificio de Ciencias</ItemDescription>
                           </ItemContent>
                         </Item>
-                      )}
+                      )} */}
 
                       <Item>
                         <ItemMedia variant="icon">

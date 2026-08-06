@@ -8,8 +8,7 @@ export const materiaSchema = z.object({
   codigo: z.coerce
     .string()
     .regex(/^\d+$/, "El código solo puede contener números")
-    .min(1, "Por favor ingresar el código de la materia")
-    .max(7, "El maximo de caracteres es de 7"),
+    .optional(),
   creditos: z.coerce
     .number()
     .int("Los créditos deben ser un número entero")
@@ -18,6 +17,10 @@ export const materiaSchema = z.object({
   color_hex: z
     .string()
     .min(1, "Debe elegir un color"),
+  profesor: z.
+    string()
+    .nullable()
+    .optional(),
   semestre_id: z
     .string()
 });
