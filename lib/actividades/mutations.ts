@@ -2,14 +2,12 @@
 
 import { ActividadFormData } from "@/app/(app)/calendario/schemas";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { ActividadInsert } from "../types/actividad";
 
-export async function createActividad(actividad: ActividadFormData, supabase: SupabaseClient, userId: string) {
+export async function createActividad(actividad: ActividadInsert, supabase: SupabaseClient) {
   return supabase
     .from("actividades")
-    .insert({
-      ...actividad,
-      user_id: userId,
-    })
+    .insert(actividad)
     .select("id")
     .single();
 }

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ActividadFormData, actividadSchema } from "@/app/(app)/calendario/schemas";
 import { requireUser } from "@/lib/supabase/auth";
 import { createActividad, deleteActividad, updateActividad } from "@/lib/actividades/mutations";
+import { ActividadInsert, ActividadUpdate } from "@/lib/types/actividad";
 
 export type ActividadFormState = {
   success: boolean;
@@ -37,7 +38,12 @@ export async function createActividadAction(
     };
   }
 
-  const { data: actividadCreada, error: actividadError } = await createActividad(parsed.data, supabase, user.id);
+  const actividadAGuardar: ActividadInsert = {
+    ...parsed.data,
+    user_id: user.id
+  } 
+
+  const { data: actividadCreada, error: actividadError } = await createActividad(actividadAGuardar, supabase);
 
   if (actividadError || !actividadCreada) {
     return {
@@ -161,19 +167,11 @@ export async function toggleActividadCompletada(id: string, completada: boolean)
   };
 }
 
-// TODO: Revisar codigo y mejorar
 export async function updateActividadFechaAction(
   id: string,
-  data: {
-    fecha_entrega?: string;
-    hora_inicio: string | null;
-    hora_fin: string | null;
-  },
+  actividadActualizar: ActividadUpdate,
 ): Promise<ActividadFormState> {
   const supabase = await createClient();
-
-  console.log(data);
-  
 
   const {
     data: { user },
@@ -186,7 +184,7 @@ export async function updateActividadFechaAction(
     };
   }
 
-  const { error } = await supabase.from("actividades").update(data).eq("id", id);
+  const { error } = await supabase.from("actividades").update(actividadActualizar).eq("id", id);
 
   if (error) {
     return {

@@ -26,7 +26,7 @@ import { ActividadDetail } from "@/components/actividad/actividad-detail";
 import { ActividadDeleteDialog } from "@/components/actividad/actividad-delete-dialog";
 import { CalendarioVistaDiaria } from "./calendario-vista-diaria";
 import { addMinutesToTime, deltaYToMinutes } from "@/lib/utils-time";
-import { ActividadConMateria } from "@/lib/types/actividad";
+import { ActividadConMateria, ActividadUpdate } from "@/lib/types/actividad";
 import { MateriaParaSelect } from "@/lib/types/materia";
 import { FiltrosState } from "@/lib/types/common";
 
@@ -188,16 +188,9 @@ export function CalendarioView({ initialActividades, materias }: Props) {
 
     const previousActividades = actividades;
 
-    let updateData: {
-      fecha_entrega?: string;
-      hora_inicio: string | null;
-      hora_fin: string | null;
-    } = {
-      hora_fin: null, hora_inicio: null
-    };
+    let actividadActualizar: ActividadUpdate = {};
 
     // ========= Vista mensual =========
-    // !ERROR: Hay que tener el encuenta la hora al momento de mover
     if (view === "mes") {
       if (!over) return;
 
@@ -207,7 +200,7 @@ export function CalendarioView({ initialActividades, materias }: Props) {
         return;
       }
 
-      updateData.fecha_entrega = newDateKey;
+      actividadActualizar.fecha_entrega = newDateKey;
 
       setActividades((prev) =>
         prev.map((a) =>
@@ -243,7 +236,7 @@ export function CalendarioView({ initialActividades, materias }: Props) {
         return;
       }
 
-      updateData = {
+      actividadActualizar = {
         fecha_entrega: newDateKey,
         hora_inicio: newInicio,
         hora_fin: newFin,
@@ -273,7 +266,7 @@ export function CalendarioView({ initialActividades, materias }: Props) {
 
       const newFin = act.hora_fin ? addMinutesToTime(act.hora_fin, deltaMinutes) : null;
 
-      updateData = {
+      actividadActualizar = {
         hora_inicio: newInicio,
         hora_fin: newFin,
       };
@@ -291,7 +284,7 @@ export function CalendarioView({ initialActividades, materias }: Props) {
       );
     }
 
-    const { success, message } = await updateActividadFechaAction(act.id, updateData);
+    const { success, message } = await updateActividadFechaAction(act.id, actividadActualizar);
 
     if (!success) {
       setActividades(previousActividades);
