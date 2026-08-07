@@ -2,6 +2,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { requireUser } from "../supabase/auth";
 import { createClient } from "../supabase/server";
 import { Semestre } from "../types/semestre";
+import { CACHE_TAGS } from "../cache-keys";
 
 export async function getSemestreActual(): Promise<Semestre> {
   "use cache: private";
@@ -20,7 +21,7 @@ export async function getSemestreActual(): Promise<Semestre> {
     };
   }
 
-  cacheTag(`semestres-${user.id}`);
+  cacheTag(CACHE_TAGS.semestres(user.id));
   cacheLife("weeks");
 
   const { data, error } = await supabase

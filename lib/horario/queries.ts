@@ -1,32 +1,8 @@
-"use server";
-
 import { cacheLife, cacheTag } from "next/cache";
 import { createClient } from "../supabase/server";
 import { requireUser } from "../supabase/auth";
 import type { Horario, HorarioConMateria } from "../types/horario";
-
-export async function getHorariosByMateriaId(materiaId: string): Promise<Horario[]> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("horarios")
-    .select("id, dia, hora_inicio, hora_fin, materia_id, salon")
-    .eq("materia_id", materiaId);
-
-  if (error) throw error;
-  return data;
-}
-
-export async function getHorarioIdsByMateriaId(materiaId: string) {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase.from("horarios").select("id").eq("materia_id", materiaId);
-
-  return {
-    data: data?.map((horario) => horario.id) ?? [],
-    error,
-  };
-}
+import { CACHE_TAGS } from "../cache-keys";
 
 export async function getHorarios(): Promise<Horario[]> {
   "use cache: private";
@@ -39,8 +15,8 @@ export async function getHorarios(): Promise<Horario[]> {
     return [];
   }
 
-  cacheTag(`horarios-${user.id}`);
-  cacheLife("hours");
+  cacheTag(CACHE_TAGS.horarios(user.id));
+  cacheLife("weeks");
 
   const { data, error } = await supabase
     .from("horarios")
@@ -59,7 +35,10 @@ export async function getHorarios(): Promise<Horario[]> {
     )
     .eq("materias.semestre.es_actual", true);
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error en getHorarios:", error.message);
+    throw new Error(`Error al cargar los horarios: ${error.message}`);
+  }
 
   return data;
 }
@@ -75,8 +54,8 @@ export async function getHorariosConMateria(): Promise<HorarioConMateria[]> {
     return [];
   }
 
-  cacheTag(`horarios-${user.id}`);
-  cacheLife("hours");
+  cacheTag(CACHE_TAGS.horarios(user.id));
+  cacheLife("weeks");
 
   const { data, error } = await supabase
     .from("horarios")
@@ -99,7 +78,10 @@ export async function getHorariosConMateria(): Promise<HorarioConMateria[]> {
     )
     .eq("materia.semestre.es_actual", true);
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error en getHorariosConMateria:", error.message);
+    throw new Error(`Error al cargar los horarios con materia: ${error.message}`);
+  }
 
   return data;
 }
@@ -115,8 +97,8 @@ export async function getHorariosConMateriaPorDia(dia: number): Promise<HorarioC
     return [];
   }
 
-  cacheTag(`horarios-${user.id}`);
-  cacheLife("hours");
+  cacheTag(CACHE_TAGS.horarios(user.id));
+  cacheLife("weeks");
 
   const { data, error } = await supabase
     .from("horarios")
@@ -142,24 +124,20 @@ export async function getHorariosConMateriaPorDia(dia: number): Promise<HorarioC
     .order("hora_inicio");
 
   if (error) {
-    throw error;
+    console.error("Error en getHorariosConMateriaPorDia:", error.message);
+    throw new Error(`Error al cargar los horarios con materia por dia: ${error.message}`);
   }
 
   return data;
 }
 
 export async function getClaseActual(): Promise<HorarioConMateria | null> {
-  "use cache: private";
-
   const supabase = await createClient();
 
   const user = await requireUser(supabase);
   if (!user) {
     return null;
   }
-
-  cacheLife("minutes");
-  cacheTag(`horarios-${user.id}`);
 
   const now = new Date();
   const day = now.getDay();
@@ -183,15 +161,11 @@ export async function getClaseActual(): Promise<HorarioConMateria | null> {
     .eq("dia", day)
     .lte("hora_inicio", time)
     .gte("hora_fin", time)
+    .limit(1)
     .maybeSingle();
 
   if (error) {
-    console.error(error.message);
-    return null;
-  }
-
-  if (!data) {
-    console.log("No hay horario en este momento");
+    console.error("Error al obtener la clase actual:", error.message);
     return null;
   }
 

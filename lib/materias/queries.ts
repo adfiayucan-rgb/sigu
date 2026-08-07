@@ -1,16 +1,8 @@
-"use server";
-
 import { cacheLife, cacheTag } from "next/cache";
 import { createClient } from "../supabase/server";
 import { requireUser } from "../supabase/auth";
-import type { Materia, MateriaConHorarioYActividades, MateriaParaSelect } from "../types/materia";
-
-export interface MateriasStats {
-  total_materias: number;
-  total_creditos: number;
-  actividades_completadas: number;
-  actividades_pendientes: number;
-}
+import type { Materia, MateriaConHorarioYActividades, MateriaParaSelect, MateriasStats } from "../types/materia";
+import { CACHE_TAGS } from "../cache-keys";
 
 export async function getMateriaConHorarioYActividades(): Promise<MateriaConHorarioYActividades[]> {
   "use cache: private";
@@ -22,7 +14,7 @@ export async function getMateriaConHorarioYActividades(): Promise<MateriaConHora
   }
 
   cacheLife("weeks");
-  cacheTag(`materias-${user.id}`);
+  cacheTag(CACHE_TAGS.materias(user.id));
 
   const { data, error } = await supabase
     .from("materias")
@@ -60,10 +52,12 @@ export async function getMateriaConHorarioYActividades(): Promise<MateriaConHora
         )
     `,
     )
-    .eq("semestres.es_actual", true)
-    .eq("actividades.es_examen", true);
+    .eq("semestres.es_actual", true);
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error en getMateriaConHorarioYActividades:", error.message);
+    throw new Error(`Error al cargar las materias con horarios y actividades: ${error.message}`);
+  }
 
   return data;
 }
@@ -79,7 +73,7 @@ export async function getMaterias(): Promise<Materia[]> {
   }
 
   cacheLife("weeks");
-  cacheTag(`materias-${user.id}`);
+  cacheTag(CACHE_TAGS.materias(user.id));
 
   const { data, error } = await supabase
     .from("materias")
@@ -92,7 +86,10 @@ export async function getMaterias(): Promise<Materia[]> {
     .eq("semestre.es_actual", true)
     .order("nombre");
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error en getMaterias:", error.message);
+    throw new Error(`Error al cargar las materias: ${error.message}`)
+  }
 
   return data;
 }
@@ -107,7 +104,7 @@ export async function getMateriasParaSelect(): Promise<MateriaParaSelect[]> {
   }
 
   cacheLife("weeks");
-  cacheTag(`materias-${user.id}`);
+  cacheTag(CACHE_TAGS.materias(user.id));
 
   const { data, error } = await supabase
     .from("materias")
@@ -123,7 +120,10 @@ export async function getMateriasParaSelect(): Promise<MateriaParaSelect[]> {
     .eq("semestres.es_actual", true)
     .order("nombre");
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error en getMateriasParaSelect:", error.message);
+    throw new Error(`Error al cargar las materias para el select: ${error.message}`)
+  }
 
   return data;
 }
@@ -135,8 +135,6 @@ export async function getMateriasStats(): Promise<MateriasStats> {
   const user = await requireUser(supabase);
 
   if (!user) {
-    console.error("No se obtuvo usuario");
-
     return {
       actividades_completadas: 0,
       actividades_pendientes: 0,
@@ -146,23 +144,18 @@ export async function getMateriasStats(): Promise<MateriasStats> {
   }
 
   cacheLife("weeks");
-  cacheTag(`materias-${user.id}`);
+  cacheTag(CACHE_TAGS.materias(user.id));
 
   const { data, error } = await supabase.rpc("get_materias_stats");
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error en getMateriasStats:", error.message);
+    throw new Error(`Error al cargar las estadisticas de las materias: ${error.message}`)
+  }
 
   const stats = data[0] as MateriasStats;
 
   return stats;
-  /*
-{
-  total_materias: 7,
-  total_creditos: 21,
-  actividades_completadas: 15,
-  actividades_pendientes: 9
-}
-*/
 }
 
 export async function getMateriasByNombres(nombres: string[]) {

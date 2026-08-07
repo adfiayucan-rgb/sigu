@@ -1,10 +1,9 @@
-"use server";
-
 import { cacheLife, cacheTag } from "next/cache";
 import { createClient } from "../supabase/server";
 import { addDays, format, startOfDay } from "date-fns";
 import { requireUser } from "../supabase/auth";
 import { Actividad, ActividadConMateria } from "../types/actividad";
+import { CACHE_TAGS } from "../cache-keys";
 
 export async function getActividadConMateriaByDate(date: string): Promise<ActividadConMateria[]> {
   "use cache: private";
@@ -16,7 +15,7 @@ export async function getActividadConMateriaByDate(date: string): Promise<Activi
   }
 
   cacheLife("weeks");
-  cacheTag(`actividades-${user.id}`);
+  cacheTag(CACHE_TAGS.actividades(user.id));
 
   const start = format(startOfDay(date), "yyyy-MM-dd");
   const end = format(addDays(startOfDay(date), 1), "yyyy-MM-dd");
@@ -69,7 +68,7 @@ export async function getActividadById(id: string): Promise<ActividadConMateria 
   }
 
   cacheLife("weeks");
-  cacheTag(`actividades-${user.id}`);
+  cacheTag(CACHE_TAGS.actividades(user.id));
 
   const { data, error } = await supabase
     .from("actividades")
@@ -139,7 +138,7 @@ export async function getActividades(): Promise<Actividad[]> {
   }
 
   cacheLife("weeks");
-  cacheTag(`actividades-${user.id}`);
+  cacheTag(CACHE_TAGS.actividades(user.id));
 
   const { data, error } = await supabase
     .from("actividades")
@@ -180,7 +179,7 @@ export async function getActividadesConMateria(): Promise<ActividadConMateria[]>
   }
 
   cacheLife("weeks");
-  cacheTag(`actividades-${user.id}`);
+  cacheTag(CACHE_TAGS.actividades(user.id));
 
   const { data, error } = await supabase
     .from("actividades")

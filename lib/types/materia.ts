@@ -14,3 +14,10 @@ export type MateriaConHorarioYActividades = Materia & {
     horarios: Horario[],
     actividades: Actividad[]
 }
+
+export type MateriasStats = {
+  total_materias: number;
+  total_creditos: number;
+  actividades_completadas: number;
+  actividades_pendientes: number;
+}
