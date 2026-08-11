@@ -3,6 +3,7 @@ import { createClient } from "../supabase/server";
 import { requireUser } from "../supabase/auth";
 import type { Horario, HorarioConMateria } from "../types/horario";
 import { CACHE_TAGS } from "../cache-keys";
+import { getCurrentDay, getCurrentTime } from "../date";
 
 export async function getHorarios(): Promise<Horario[]> {
   "use cache: private";
@@ -139,9 +140,13 @@ export async function getClaseActual(): Promise<HorarioConMateria | null> {
     return null;
   }
 
-  const now = new Date();
-  const day = now.getDay();
-  const time = now.toTimeString().slice(0, 5); // "08:35"
+  const day = getCurrentDay();
+  const time = getCurrentTime();
+
+  console.log("day: ",day);
+  console.log("time: ",time);
+
+  
 
   const { data, error } = await supabase
     .from("horarios")
